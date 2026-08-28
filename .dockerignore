@@ -1,0 +1,12 @@
+.git
+apps/dashboard/node_modules
+apps/dashboard/dist
+**/__pycache__
+.venv
+venv
+data/raw/*
+data/synthetic/*
+*.md
+.env
+.pytest_cache
+.ruff_cache

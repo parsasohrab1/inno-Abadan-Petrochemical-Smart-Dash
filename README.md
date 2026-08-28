@@ -650,3 +650,36 @@ def generate_auto_operation_logs(num_actions=1000):
 7. **مطابقت با استانداردهای جهانی**: ISO 17359, ISO 14224, ISA/IEC 62443
 
 این سیستم با الهام از بهترین نمونه‌های جهانی مانند **ABB Ability**، **Honeywell Forge** و **AVEVA Digital Twin** طراحی شده و با اضافه کردن قابلیت‌های منحصربه‌فرد مانند **آنالیز صوتی**، **پایش سلامت سنسورها** و **سیستم Auto Operation کامل**، از نمونه‌های موجود پیشی می‌گیرد.
+
+
+---
+
+## ۱۲. پیاده‌سازی (Skeleton)
+
+اسکلت اجرایی این سامانه در همین مخزن پیاده‌سازی شده است. ساختار کامل، نگاشت
+نیازمندی‌ها به کد و راهنمای اجرا در [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md)
+و پوشه‌ی [`docs/`](docs/) آمده است.
+
+خلاصه:
+
+| بخش | مسیر | فناوری |
+|---|---|---|
+| میکروسرویس‌های بک‌اند | [`services/`](services/) | Python ۳٫۱۱ + FastAPI |
+| موتور و مدل‌های AI | [`ml/`](ml/) | NumPy/SciPy + scikit-learn (جایگزین CNN+LSTM با همان رابط) |
+| داشبرد | [`apps/dashboard/`](apps/dashboard/) | React + Vite + TypeScript (RTL) |
+| زیرساخت توسعه | [`docker-compose.yml`](docker-compose.yml) | PostgreSQL, InfluxDB, Kafka, MQTT, Grafana, MinIO |
+
+سرویس‌های اصلی: `asset-registry` (سلسله‌مراتب دارایی و نگاشت کامل تجهیز↔سنسور↔دوربین)،
+`data-acquisition` (شبیه‌ساز فیزیکی مجتمع + پل MQTT)، `signal-processing` (FFT/Wavelet،
+استخراج ویژگی)، `ai-engine` (تشخیص ۱۶ عیب)، `prediction-rul` (RUL و هشدار ۷۲ ساعته)،
+`sensor-health` (سه‌چراغ سبز/زرد/قرمز + واحد اندازه‌گیری)، `auto-operation` (اوپراتور
+هوشمند ۵ سطحی + کنترل روشن/خاموش و تعویض زاپاس با بهینه‌سازی برخط)، `economics` (سود و
+صرفه‌جویی لحظه‌ای به دلار برای مدیر)، `alerting`، `reporting`، و `api-gateway`.
+
+```bash
+cp .env.example .env
+make up        # بالا آوردن کل پشته
+make train     # آموزش مدل تشخیص عیب و تخمین‌گر RUL روی داده‌ی سنتتیک
+make seed      # تولید و بارگذاری داده‌ی سنتتیک (بخش ۱۰)
+make dashboard # اجرای فرانت‌اند روی http://localhost:5173
+```

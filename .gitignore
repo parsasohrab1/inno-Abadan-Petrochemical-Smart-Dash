@@ -1,0 +1,52 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# ---- Node / Frontend ----
+node_modules/
+apps/dashboard/dist/
+apps/dashboard/.vite/
+*.local
+.eslintcache
+
+# ---- Env / secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- Data (synthetic + generated) ----
+data/synthetic/*
+!data/synthetic/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+ml/models/artifacts/*
+!ml/models/artifacts/.gitkeep
+*.parquet
+*.h5
+*.ckpt
+*.onnx
+
+# ---- Infra / runtime ----
+.docker/
+volumes/
+*.log
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,160 @@
+name: abadan-cbm
+
+x-py-service: &py-service
+  build:
+    context: .
+    dockerfile: infra/docker/python-service.Dockerfile
+  env_file: .env
+  restart: unless-stopped
+  depends_on:
+    postgres: { condition: service_healthy }
+    kafka: { condition: service_started }
+    influxdb: { condition: service_started }
+
+services:
+  # ----------------------------- infrastructure -----------------------------
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-abadan_cbm}
+      POSTGRES_USER: ${POSTGRES_USER:-cbm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cbm-dev-password}
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cbm}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  influxdb:
+    image: influxdb:2.7-alpine
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${GRAFANA_ADMIN_USER:-admin}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin12345}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUX_ORG:-abadan}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUX_BUCKET:-cbm_timeseries}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_TOKEN:-dev-influx-token}
+    ports: ["8086:8086"]
+    volumes:
+      - influxdata:/var/lib/influxdb2
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    depends_on: [zookeeper]
+    ports: ["9092:9092"]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports: ["1883:1883"]
+    volumes:
+      - ./infra/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports: ["9000:9000", "9001:9001"]
+    volumes:
+      - miniodata:/data
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+
+  # ----------------------------- application services -----------------------------
+  asset-registry:
+    <<: *py-service
+    command: uvicorn services.asset_registry.main:app --host 0.0.0.0 --port 8001
+    ports: ["8001:8001"]
+
+  data-acquisition:
+    <<: *py-service
+    command: python -m services.data_acquisition.main
+    depends_on:
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_started }
+      influxdb: { condition: service_started }
+      asset-registry: { condition: service_started }
+
+  signal-processing:
+    <<: *py-service
+    command: python -m services.signal_processing.main
+
+  ai-engine:
+    <<: *py-service
+    command: python -m services.ai_engine.main
+    volumes:
+      - modeldata:/models
+
+  prediction-rul:
+    <<: *py-service
+    command: python -m services.prediction_rul.main
+    volumes:
+      - modeldata:/models
+
+  sensor-health:
+    <<: *py-service
+    command: python -m services.sensor_health.main
+
+  auto-operation:
+    <<: *py-service
+    command: uvicorn services.auto_operation.main:app --host 0.0.0.0 --port 8002
+    ports: ["8002:8002"]
+
+  economics:
+    <<: *py-service
+    command: uvicorn services.economics.main:app --host 0.0.0.0 --port 8003
+    ports: ["8003:8003"]
+
+  alerting:
+    <<: *py-service
+    command: uvicorn services.alerting.main:app --host 0.0.0.0 --port 8004
+    ports: ["8004:8004"]
+
+  reporting:
+    <<: *py-service
+    command: uvicorn services.reporting.main:app --host 0.0.0.0 --port 8005
+    ports: ["8005:8005"]
+
+  api-gateway:
+    <<: *py-service
+    command: uvicorn services.api_gateway.main:app --host 0.0.0.0 --port 8000
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      kafka: { condition: service_started }
+      asset-registry: { condition: service_started }
+      auto-operation: { condition: service_started }
+      economics: { condition: service_started }
+
+volumes:
+  pgdata:
+  influxdata:
+  miniodata:
+  modeldata:
