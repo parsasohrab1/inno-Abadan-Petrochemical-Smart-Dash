@@ -57,34 +57,44 @@ class FaultClassifier:
 
 
 class RuleBasedClassifier:
-    """fallback بدون آموزش — امتیازدهی بر اساس نسبت دامنه در مضارب مشخصه."""
+    """fallback بدون آموزش — امتیازدهی هیوریستیک بر پایه‌ی امضاهای فرکانسی/پاکت.
+
+    فقط زمانی استفاده می‌شود که artifact مدل آموزش‌دیده موجود نباشد. دقت آن پایین‌تر
+    از مدل GBM است و برای رعایت NFR-08 باید `python -m ml.training.train_fault_model` اجرا شود.
+    """
 
     feature_order = FEATURE_ORDER
     classes = [f.value for f in SIGNATURES]
 
     def predict(self, feats: dict[str, float]) -> tuple[FaultType, float, float]:
-        scores: dict[FaultType, float] = {}
         one_x = feats.get("ord_1x", 1e-9) or 1e-9
-        for fault, sig in SIGNATURES.items():
-            if fault == FaultType.NORMAL:
-                scores[fault] = 1.0 / (1.0 + feats.get("rms", 0) * 20 + abs(feats.get("kurtosis", 0)))
-                continue
-            s = 0.0
-            for order in sig.dominant_orders:
-                key = f"ord_{order:g}x"
-                s += feats.get(key, 0.0) / one_x
-            if sig.broadband:
-                s += feats.get("hf_energy_ratio", 0) * 3 + max(0, feats.get("envelope_kurtosis", 0)) * 0.3
-            if fault == FaultType.MECHANICAL_LOOSENESS:
-                s += feats.get("half_order_sum", 0) * 2
-            if fault == FaultType.MISALIGNMENT:
-                s += feats.get("ratio_2x_1x", 0) * 2
-            scores[fault] = s
-        total = sum(scores.values()) or 1e-9
-        best = max(scores, key=scores.get)
-        confidence = scores[best] / total
+        g = feats.get
+        scores: dict[FaultType, float] = {
+            FaultType.NORMAL: 1.0 / (1.0 + g("rms", 0) * 25 + abs(g("kurtosis", 0)) * 0.5),
+            FaultType.UNBALANCE: g("ord_1x", 0) / one_x - g("harmonic_sum", 0) * 0.3,
+            FaultType.MISALIGNMENT: g("ratio_2x_1x", 0) * 2 + g("ratio_3x_1x", 0),
+            FaultType.MECHANICAL_LOOSENESS: g("half_order_sum", 0) * 2 + g("impulse_factor", 0) * 0.2,
+            FaultType.ROTOR_RUB: g("sub_synchronous", 0) * 1.5 + g("mid_band_peakiness", 0) * 0.05
+            + g("ord_0.33x", 0) / one_x,
+            FaultType.BENT_SHAFT: g("ord_1x", 0) / one_x + g("ratio_2x_1x", 0) * 1.2,
+            FaultType.BEARING_OUTER_RACE: g("env_bpfo", 0) - g("env_bpfi_sidebands", 0) * 0.5,
+            FaultType.BEARING_INNER_RACE: g("env_bpfi", 0) + g("env_bpfi_sidebands", 0),
+            FaultType.BEARING_BALL: g("env_bsf", 0) + g("env_bsf_sidebands", 0),
+            FaultType.BEARING_CAGE: g("env_ftf", 0) + g("be_500_1500", 0) * 2,
+            FaultType.GEAR_MESH_WEAR: g("gmf_ratio", 0) * 3,
+            FaultType.BROKEN_ROTOR_BAR: g("env_pole_pass", 0) * 1.5,
+            FaultType.OIL_WHIRL: g("oil_whirl_ratio", 0) * 2 + min(g("oil_whirl_no_harmonic", 0), 5),
+            FaultType.CAVITATION: g("spectral_flatness", 0) * 4 + g("hf_energy_ratio", 0) * 2,
+            FaultType.RESONANCE: g("mid_band_peakiness", 0) * 0.08 + g("be_1500_2500", 0) * 3,
+            FaultType.BELT_DEFECT: g("belt_series", 0) * 2,
+            FaultType.ELECTRICAL_STATOR: g("line_100hz", 0) * 3,
+        }
+        best = max(scores, key=lambda k: scores[k])
+        positive = {k: max(0.0, v) for k, v in scores.items()}
+        total = sum(positive.values()) or 1e-9
+        confidence = positive[best] / total
         severity = _severity_from_features(feats, best)
-        return best, severity, float(min(0.99, confidence))
+        return best, severity, float(min(0.99, max(0.05, confidence)))
 
 
 def _severity_from_features(feats: dict[str, float], fault: FaultType) -> float:

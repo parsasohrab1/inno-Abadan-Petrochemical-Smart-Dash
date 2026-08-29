@@ -21,8 +21,8 @@ from services.common.logging import get_logger
 
 log = get_logger("train.fault")
 
-SAMPLES_PER_FAULT = 260
-RPMS = [740, 990, 1480, 2960, 3560, 6300, 8200]
+SAMPLES_PER_FAULT = 420
+RPMS = [740, 990, 1480, 1780, 2960, 3560, 4200, 6300, 8200]
 
 
 def build_dataset(seed: int = 42) -> tuple[np.ndarray, np.ndarray]:
@@ -30,9 +30,16 @@ def build_dataset(seed: int = 42) -> tuple[np.ndarray, np.ndarray]:
     X, y = [], []
     for fault in ALL_FAULTS:
         for _ in range(SAMPLES_PER_FAULT):
-            rpm = float(rng.choice(RPMS))
-            severity = 0.0 if fault.value == "normal" else float(rng.uniform(0.08, 1.0))
-            spec = WaveformSpec(rpm=rpm)
+            rpm = float(rng.choice(RPMS)) * float(rng.uniform(0.97, 1.03))
+            severity = (
+                0.0 if fault.value == "normal" else float(rng.uniform(0.12, 1.0))
+            )
+            # تنوع دامنه‌ی پایه و نویز برای تعمیم‌پذیری بهتر
+            spec = WaveformSpec(
+                rpm=rpm,
+                base_g=float(rng.uniform(0.035, 0.07)),
+                noise_g=float(rng.uniform(0.004, 0.014)),
+            )
             wave = synth_waveform(fault, severity, spec, rng)
             feats = extract_features(wave, spec.fs, rpm)
             X.append(to_vector(feats))
