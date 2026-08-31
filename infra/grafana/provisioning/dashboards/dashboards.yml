@@ -1,0 +1,10 @@
+apiVersion: 1
+providers:
+  - name: CBM
+    orgId: 1
+    folder: "Abadan CBM"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

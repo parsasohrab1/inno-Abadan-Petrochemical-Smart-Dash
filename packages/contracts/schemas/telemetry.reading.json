@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abadan-cbm/schemas/telemetry.reading.json",
+  "title": "TelemetryReading",
+  "type": "object",
+  "required": ["sensor_tag", "equipment_tag", "ts", "value", "unit"],
+  "properties": {
+    "sensor_tag": { "type": "string" },
+    "equipment_tag": { "type": "string" },
+    "kind": { "type": "string" },
+    "ts": { "type": "string", "format": "date-time" },
+    "value": { "type": "number" },
+    "unit": { "type": "string", "description": "واحد اندازه‌گیری — همیشه همراه مقدار" },
+    "quality": { "enum": ["good", "uncertain", "bad"] },
+    "sensor_health": { "enum": ["green", "yellow", "red"] }
+  }
+}

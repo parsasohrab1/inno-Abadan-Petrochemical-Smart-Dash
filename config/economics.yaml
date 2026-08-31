@@ -1,0 +1,41 @@
+# قیمت‌نامه‌ی مدل اقتصادی — قابل ویرایش بدون تغییر کد.
+# مقادیر پیش‌فرض در services/common/economics.py و با این فایل بازنویسی می‌شوند.
+currency: USD
+
+products:            # دلار بر تن محصول
+  PVC: 950
+  Caustic: 450
+  DDB: 1400
+  Tetramer: 1600
+  EDC: 350
+  VCM: 800
+
+feedstock_cost_per_ton_product:
+  PVC: 520
+  Caustic: 120
+  DDB: 700
+  Tetramer: 780
+  EDC: 180
+  VCM: 430
+
+energy:
+  electricity_usd_per_kwh: 0.09
+  steam_usd_per_ton: 22
+
+downtime_cost_usd_per_hour:
+  default: 12000
+  PVC: 18000
+  Caustic: 9000
+  DDB: 7000
+
+catastrophic_failure_cost_usd:
+  pump: 45000
+  compressor: 380000
+  fan: 30000
+  turbine: 550000
+  motor: 40000
+  default: 60000
+
+baseline_unplanned_failures_per_year_per_critical_equipment: 0.9
+cbm_preventable_fraction: 0.75
+planned_vs_unplanned_repair_saving_fraction: 0.6
