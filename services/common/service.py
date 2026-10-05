@@ -1,4 +1,4 @@
-"""کارخانه‌ی ساخت اپلیکیشن FastAPI با تنظیمات مشترک (CORS، health، لاگ)."""
+"""Factory for building a FastAPI application with shared settings (CORS, health, logging)."""
 from __future__ import annotations
 
 from collections.abc import Callable

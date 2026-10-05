@@ -26,7 +26,7 @@ export function AlertsPage() {
     <div className="grid" style={{ gap: 14 }}>
       {flash.length > 0 && (
         <div className="card" style={{ borderColor: "var(--red)" }}>
-          <h3>هشدارهای تازه‌رسیده</h3>
+          <h3>Newly arrived alerts</h3>
           {flash.map((a, i) => (
             <div key={i} className="row" style={{ padding: "4px 0" }}>
               <span className="dot red" /> {a.title} — <span className="muted">{a.description}</span>
@@ -35,12 +35,12 @@ export function AlertsPage() {
         </div>
       )}
       <div className="card">
-        <h3>هشدارهای فعال ({data?.length ?? 0})</h3>
+        <h3>Active alerts ({data?.length ?? 0})</h3>
         <table>
           <thead>
             <tr>
-              <th>زمان</th><th>شدت</th><th>کد</th><th>عنوان</th>
-              <th>تجهیز/دستگاه</th><th>نوع</th>
+              <th>Time</th><th>Severity</th><th>Code</th><th>Title</th>
+              <th>Equipment/Device</th><th>Type</th>
             </tr>
           </thead>
           <tbody>
@@ -51,7 +51,7 @@ export function AlertsPage() {
                 <td>{a.code}</td>
                 <td>{a.title}</td>
                 <td>{a.equipment_tag ?? a.device_tag ?? "—"}</td>
-                <td>{a.is_predictive ? "پیش‌بینی" : "لحظه‌ای"}</td>
+                <td>{a.is_predictive ? "Predictive" : "Real-time"}</td>
               </tr>
             ))}
           </tbody>

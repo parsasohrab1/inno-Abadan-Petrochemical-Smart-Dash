@@ -1,4 +1,4 @@
-"""API سرویس اقتصادی — سود و صرفه‌جویی لحظه‌ای برای مدیر."""
+"""Economics service API — instantaneous profit and savings for the manager."""
 from __future__ import annotations
 
 import asyncio
@@ -29,7 +29,7 @@ app = create_app("economics", on_startup=_startup)
 
 @app.get("/live", tags=["economics"])
 def live(user: Annotated[TokenData, Depends(require_role(Role.VIEWER))]) -> dict:
-    """سود و صرفه‌جویی لحظه‌ای — کارت بالای داشبرد مدیریتی."""
+    """Instantaneous profit and savings — the top card of the management dashboard."""
     return calculator.snapshot_dict()
 
 

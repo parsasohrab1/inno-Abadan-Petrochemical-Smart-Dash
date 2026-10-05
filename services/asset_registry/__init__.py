@@ -1,1 +1,1 @@
-"""سرویس ثبت دارایی — سلسله‌مراتب مجتمع و نگاشت تجهیز↔سنسور↔دوربین."""
+"""Asset registry service — complex hierarchy and equipment↔sensor↔camera mapping."""

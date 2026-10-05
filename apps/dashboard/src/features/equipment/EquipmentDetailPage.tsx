@@ -52,42 +52,42 @@ export function EquipmentDetailPage() {
       </div>
 
       <div className="grid cols-4">
-        <StatCard title="شاخص سلامت" value={eq?.health_score ?? "…"} />
+        <StatCard title="Health index" value={eq?.health_score ?? "…"} />
         <StatCard
-          title="عیب تشخیص‌داده‌شده"
+          title="Detected fault"
           value={diag?.fault_type ?? "—"}
-          sub={diag && `شدت ${(diag.severity * 100).toFixed(0)}٪ · اعتماد ${(diag.confidence * 100).toFixed(0)}٪`}
+          sub={diag && `Severity ${(diag.severity * 100).toFixed(0)}% · Confidence ${(diag.confidence * 100).toFixed(0)}%`}
         />
         <StatCard
-          title="RUL (عمر باقی‌مانده)"
-          value={rul ? `${Math.round(rul.predicted_rul_hours)} ساعت` : "…"}
-          sub={rul && `اعتماد ${(rul.confidence * 100).toFixed(0)}٪`}
+          title="RUL (remaining life)"
+          value={rul ? `${Math.round(rul.predicted_rul_hours)} hours` : "…"}
+          sub={rul && `Confidence ${(rul.confidence * 100).toFixed(0)}%`}
         />
-        <StatCard title="بحرانیت" value={eq?.criticality ?? "…"} sub={eq?.manufacturer} />
+        <StatCard title="Criticality" value={eq?.criticality ?? "…"} sub={eq?.manufacturer} />
       </div>
 
       {canControl && (
         <div className="card">
-          <h3>کنترل تجهیز (Auto Operation)</h3>
+          <h3>Equipment control (Auto Operation)</h3>
           <div className="row">
-            <button className="ok" onClick={() => control.mutate("start")}>روشن‌کردن</button>
-            <button className="danger" onClick={() => control.mutate("stop")}>خاموش‌کردن</button>
+            <button className="ok" onClick={() => control.mutate("start")}>Start</button>
+            <button className="danger" onClick={() => control.mutate("stop")}>Stop</button>
             <button className="primary" disabled={!eq?.has_spare} onClick={() => control.mutate("changeover")}>
-              تعویض به زاپاس
+              Switch to standby
             </button>
-            {control.isPending && <span className="muted">در حال اجرا…</span>}
+            {control.isPending && <span className="muted">Running…</span>}
           </div>
           <div className="muted" style={{ marginTop: 8 }}>
-            اقدامات بحرانی طبق سیاست، نیازمند تأیید انسانی است (Human-in-the-loop).
+            Critical actions require human approval per policy (Human-in-the-loop).
           </div>
         </div>
       )}
 
       <div className="grid cols-2">
-        <TrendChart title="روند RMS ارتعاش" series={trends.rms} unit="g" />
-        <TrendChart title="روند Kurtosis" series={trends.kurtosis} />
-        <TrendChart title="روند شاخص سلامت (۳۰ روز)" series={trends.health_score} />
-        <TrendChart title="روند RUL (۳۰ روز)" series={trends.rul_hours} unit="ساعت" />
+        <TrendChart title="Vibration RMS trend" series={trends.rms} unit="g" />
+        <TrendChart title="Kurtosis trend" series={trends.kurtosis} />
+        <TrendChart title="Health index trend (30 days)" series={trends.health_score} />
+        <TrendChart title="RUL trend (30 days)" series={trends.rul_hours} unit="hours" />
       </div>
     </div>
   );

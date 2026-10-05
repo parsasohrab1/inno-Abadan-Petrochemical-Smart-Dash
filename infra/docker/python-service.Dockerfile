@@ -1,4 +1,4 @@
-# پایه‌ی مشترک همه‌ی میکروسرویس‌های پایتون
+# Shared base for all Python microservices
 FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
@@ -19,7 +19,7 @@ COPY ml ./ml
 COPY scripts ./scripts
 COPY config ./config
 
-# healthcheck پیش‌فرض برای سرویس‌های HTTP (سرویس‌های worker آن را override می‌کنند)
+# default healthcheck for HTTP services (worker services override it)
 HEALTHCHECK --interval=15s --timeout=5s --retries=5 \
     CMD curl -fsS http://localhost:${SERVICE_PORT:-8000}/health || exit 1
 

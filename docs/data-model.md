@@ -1,26 +1,26 @@
-# مدل داده — سلسله‌مراتب دارایی و پایش سنسور/دوربین
+# Data model — asset hierarchy and sensor/camera monitoring
 
-منبع: README §۱-۳ (واحدهای تولیدی)، §۳ (ورودی‌ها)، §۵ (سلامت سنسورها)، §۸-۱ (پوشش دوربین).
+Source: README §1-3 (production units), §3 (inputs), §5 (sensor health), §8-1 (camera coverage).
 
-## ۱. سلسله‌مراتب دارایی (Asset Hierarchy)
+## 1. Asset hierarchy (Asset Hierarchy)
 
-هر تجهیز و هر بخش از خط تولید **باید** به سنسورها و دوربین‌های مرتبط خود متصل باشد
-(الزام کاربر). ساختار درختی:
+Every equipment and every part of the production line **must** be connected to its related sensors and cameras
+(user requirement). Tree structure:
 
 ```
-Plant (پتروشیمی آبادان)
-└── Area / Unit            واحدهای ۲۰۰.۳۰۰، ۴۰۰.۵۰۰، ۶۰۰.۷۰۰، ۸۰۰.۹۰۰، ۱۰۰۰،
-    │                       واحدهای جدید PVC / تترامر / DDB، کلرآلکالی، مخازن، خطوط لوله
-    └── ProductionLine     خط تولید (مثلاً خط PVC-A)
-        └── Equipment      پمپ، کمپرسور، فن، توربین، راکتور، مبدل، برج، مخزن
-            ├── Component   یاتاقان DE/NDE، شفت، ایمپلر، کوپلینگ، موتور محرک
-            ├── Sensor[]    ← نگاشت چند‌به‌چند از طریق SensorMount
-            └── Camera[]    ← نگاشت چند‌به‌چند از طریق CameraCoverage
+Plant (Abadan Petrochemical)
+└── Area / Unit            units 200.300, 400.500, 600.700, 800.900, 1000,
+    │                       new PVC / tetramer / DDB units, chlor-alkali, tanks, pipelines
+    └── ProductionLine     production line (e.g., PVC-A line)
+        └── Equipment      pump, compressor, fan, turbine, reactor, exchanger, tower, tank
+            ├── Component   DE/NDE bearing, shaft, impeller, coupling, driver motor
+            ├── Sensor[]    ← many-to-many mapping via SensorMount
+            └── Camera[]    ← many-to-many mapping via CameraCoverage
 ```
 
-### جدول‌های PostgreSQL (`asset-registry`)
+### PostgreSQL tables (`asset-registry`)
 
-| جدول | فیلدهای کلیدی |
+| Table | Key fields |
 |---|---|
 | `plant` | id, name, location, design_temp_c, humidity_range |
 | `unit` | id, plant_id, code (`200-300` …), title, criticality |
@@ -31,67 +31,67 @@ Plant (پتروشیمی آبادان)
 | `camera` | id, tag, kind, resolution, fps, unit_of_measure, health_status |
 | `sensor_mount` | sensor_id, equipment_id, component_id?, axis (`X`/`Y`/`Z`), measured_quantity |
 | `camera_coverage` | camera_id, unit_id?, line_id?, equipment_id?, purpose |
-| `maintenance_record` | id, equipment_id, date, action, parts_replaced, inspector (README §۳-۵) |
+| `maintenance_record` | id, equipment_id, date, action, parts_replaced, inspector (README §3-5) |
 
-> نگاشت‌های `sensor_mount` و `camera_coverage` تضمین می‌کنند که از هر گره‌ی درخت
-> دارایی می‌توان به سنسورها/دوربین‌های مرتبط رسید و برعکس.
+> The `sensor_mount` and `camera_coverage` mappings guarantee that from every node of the asset
+> tree one can reach the related sensors/cameras and vice versa.
 
-## ۲. انواع سنسور و واحد اندازه‌گیری (README §۳)
+## 2. Sensor types and unit of measure (README §3)
 
-واحد اندازه‌گیری هر سنسور **باید در داشبرد کنار مقدار نمایش داده شود** (الزام کاربر).
+The unit of measure of each sensor **must be displayed next to the value in the dashboard** (user requirement).
 
-| `sensor.kind` | کمیت | `unit_of_measure` | محدوده‌ی مرجع | منبع README |
+| `sensor.kind` | Quantity | `unit_of_measure` | Reference range | README source |
 |---|---|---|---|---|
-| `accelerometer_triax` | شتاب ارتعاش | `g` (یا `m/s²`) | ۰–۵۰ kHz پهنای‌باند | §۳-۱ |
-| `velometer` | سرعت ارتعاش | `mm/s` | ۰–۱۰۰ | §۳-۱ |
-| `proximity_probe` | جابه‌جایی شفت | `µm` | ۰–۲۰۰۰ | §۳-۱ |
-| `ultrasonic_mic` | تراز صوت فراصوت | `dB` | — | §۳-۲ |
-| `broadband_acoustic` | فشار صوت | `dB(A)` | — | §۳-۲ |
-| `acoustic_emission` | رویداد AE | `dB AE` / `hits` | — | §۳-۲ |
-| `pressure` | فشار | `bar` (یا `kPa`) | خط/مخزن/راکتور | §۳-۴ |
-| `temperature_rtd` / `temperature_tc` | دما | `°C` | ۵− الی ۵۵+ محیط | §۳-۴ |
-| `flow_meter` | دبی | `m³/h` (یا `t/h`) | خوراک/محصول | §۳-۴ |
-| `level` | سطح | `%` (یا `mm`) | مخازن/برج‌ها | §۳-۴ |
-| `gas_detector` | غلظت گاز | `ppm` (یا `%LEL`) | قابل‌اشتعال/سمی | §۳-۴ |
+| `accelerometer_triax` | Vibration acceleration | `g` (or `m/s²`) | 0–50 kHz bandwidth | §3-1 |
+| `velometer` | Vibration velocity | `mm/s` | 0–100 | §3-1 |
+| `proximity_probe` | Shaft displacement | `µm` | 0–2000 | §3-1 |
+| `ultrasonic_mic` | Ultrasonic sound level | `dB` | — | §3-2 |
+| `broadband_acoustic` | Sound pressure | `dB(A)` | — | §3-2 |
+| `acoustic_emission` | AE event | `dB AE` / `hits` | — | §3-2 |
+| `pressure` | Pressure | `bar` (or `kPa`) | line/tank/reactor | §3-4 |
+| `temperature_rtd` / `temperature_tc` | Temperature | `°C` | -5 to 55+ ambient | §3-4 |
+| `flow_meter` | Flow | `m³/h` (or `t/h`) | feed/product | §3-4 |
+| `level` | Level | `%` (or `mm`) | tanks/towers | §3-4 |
+| `gas_detector` | Gas concentration | `ppm` (or `%LEL`) | flammable/toxic | §3-4 |
 
-| `camera.kind` | کمیت | `unit_of_measure` |
+| `camera.kind` | Quantity | `unit_of_measure` |
 |---|---|---|
-| `thermal` | دمای سطح | `°C` |
-| `ai_cctv` | رخداد بصری (شعله/دود/نشت) | `event` / `confidence %` |
-| `hyperspectral` | غلظت گاز نشتی | `ppm·m` |
+| `thermal` | Surface temperature | `°C` |
+| `ai_cctv` | Visual event (flame/smoke/leak) | `event` / `confidence %` |
+| `hyperspectral` | Leaked gas concentration | `ppm·m` |
 
-## ۳. پایش عملکرد سنسور و دوربین — سه چراغ
+## 3. Sensor and camera performance monitoring — three lights
 
-هر سنسور و هر دوربین با **سه وضعیت رنگی** پایش می‌شود (الزام کاربر):
+Each sensor and each camera is monitored with **three color states** (user requirement):
 
-| رنگ | `health_status` | معنی | اقدام |
+| Color | `health_status` | Meaning | Action |
 |---|---|---|---|
-| 🟢 سبز | `green` | سالم؛ داده‌ی معتبر | پایش عادی |
-| 🟡 زرد | `yellow` | انحراف/نیاز به کالیبراسیون | بررسی و کالیبراسیون |
-| 🔴 قرمز | `red` | خراب/داده‌ی نامعتبر | تعمیر یا تعویض |
+| 🟢 Green | `green` | Healthy; valid data | Normal monitoring |
+| 🟡 Yellow | `yellow` | Deviation/needs calibration | Check and calibrate |
+| 🔴 Red | `red` | Faulty/invalid data | Repair or replace |
 
-> یادداشت: README §۵-۱ رنگ سوم را «نارنجی» نامیده است؛ طبق درخواست کاربر رنگ قرمز
-> به‌عنوان وضعیت خطا استفاده می‌شود. نگاشت در `services/common/domain/health.py`
-> قابل پیکربندی است (`FAULT_COLOR=red`).
+> Note: README §5-1 names the third color "orange"; per the user's request, red
+> is used as the fault state. The mapping in `services/common/domain/health.py`
+> is configurable (`FAULT_COLOR=red`).
 
-### پارامترهای پایش سلامت (README §۵-۲) — سرویس `sensor-health`
+### Health monitoring parameters (README §5-2) — `sensor-health` service
 
-۱. ولتاژ تغذیه: `24V ± 5%`
-۲. سیگنال خروجی: در محدوده‌ی `4–20 mA`
-۳. کیفیت سیگنال: `SNR` (dB)
-۴. دقت اندازه‌گیری: انحراف از مرجع
-۵. ارتباطات: نرخ ارسال و تأخیر (ms)
-۶. دمای عملیاتی سنسور: در محدوده‌ی مجاز
+1. Supply voltage: `24V ± 5%`
+2. Output signal: within `4–20 mA`
+3. Signal quality: `SNR` (dB)
+4. Measurement accuracy: deviation from reference
+5. Communication: transmission rate and delay (ms)
+6. Sensor operating temperature: within the allowed range
 
-قانون رنگ (پیش‌فرض، قابل تنظیم در `sensor_health_rules.yaml`):
+Color rule (default, configurable in `sensor_health_rules.yaml`):
 
 ```
-red    اگر: قطع ارتباط > 60s  یا  خارج از 4–20mA  یا  ولتاژ خارج از ±10%
-yellow اگر: SNR < 20dB  یا  انحراف کالیبراسیون > 2%  یا  کالیبراسیون > 90 روز
-green  در غیر این صورت
+red    if: disconnection > 60s  or  outside 4–20mA  or  voltage outside ±10%
+yellow if: SNR < 20dB  or  calibration deviation > 2%  or  calibration > 90 days
+green  otherwise
 ```
 
-## ۴. رویداد تله‌متری (JSON Schema — `packages/contracts/schemas`)
+## 4. Telemetry event (JSON Schema — `packages/contracts/schemas`)
 
 ```jsonc
 // telemetry.reading
@@ -100,14 +100,14 @@ green  در غیر این صورت
   "equipment_tag": "P-1201",
   "ts": "2026-08-28T10:15:03.250Z",
   "value": 3.7,
-  "unit": "mm/s",           // همیشه همراه مقدار
+  "unit": "mm/s",           // always accompanies the value
   "quality": "good",         // good | uncertain | bad  (ISO 13374)
   "sensor_health": "green"
 }
 ```
 
-## ۵. شاخص سلامت تجهیز
+## 5. Equipment health index
 
-`health_score ∈ [0,100]` (README §۴-۱). ترکیب وزنی: شدت عیب تشخیص‌داده‌شده،
-روند ویژگی‌ها (RMS/Kurtosis)، فاصله تا آستانه‌های ISO 10816، و RUL نرمال‌شده.
-رنگ تجهیز: `green ≥ 75`، `yellow 45–75`، `red < 45` (قابل تنظیم).
+`health_score ∈ [0,100]` (README §4-1). Weighted combination: severity of the diagnosed fault,
+feature trends (RMS/Kurtosis), distance from ISO 10816 thresholds, and normalized RUL.
+Equipment color: `green ≥ 75`, `yellow 45–75`, `red < 45` (configurable).

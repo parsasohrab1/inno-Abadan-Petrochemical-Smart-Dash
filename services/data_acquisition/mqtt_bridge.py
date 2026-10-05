@@ -1,7 +1,7 @@
-"""پل MQTT → Kafka برای سنسورهای واقعی لبه (وقتی شبیه‌ساز خاموش است).
+"""MQTT → Kafka bridge for real edge sensors (when the simulator is off).
 
-انتظار می‌رود پیام‌های MQTT روی `abadan/edge/<kind>/<sensor_tag>` با payload JSON
-شامل حداقل `equipment_tag`, `value`, `unit`, `ts` منتشر شوند.
+MQTT messages are expected to be published on `abadan/edge/<kind>/<sensor_tag>` with a JSON payload
+containing at least `equipment_tag`, `value`, `unit`, `ts`.
 """
 from __future__ import annotations
 

@@ -1,8 +1,8 @@
-"""اوپراتور هوشمند (Auto Operation) — README §۶.
+"""Smart Operator (Auto Operation) — README §6.
 
-قابلیت‌ها:
-- موتور تصمیم ۵ سطحی (پایش → تحلیل → هشدار → توصیه → اقدام)
-- بهینه‌سازی برخط: خاموش‌کردن خودکار تجهیز معیوب (پمپ/کمپرسور/فن) و روشن‌کردن زاپاس
-- کنترل مستقیم روشن/خاموش تجهیزات با ماشین حالت و تاریخچه
-- Human-in-the-loop برای اقدامات بحرانی (FR-17)
+Capabilities:
+- 5-level decision engine (monitoring → analysis → alert → recommendation → action)
+- Online optimization: automatic shutdown of faulty equipment (pump/compressor/fan) and starting the standby
+- Direct on/off control of equipment with a state machine and history
+- Human-in-the-loop for critical actions (FR-17)
 """

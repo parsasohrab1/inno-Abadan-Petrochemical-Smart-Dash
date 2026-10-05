@@ -1,7 +1,7 @@
-"""نقطه‌ی ورود لایه‌ی دریافت داده.
+"""Entry point of the data acquisition layer.
 
-DAQ_SIMULATOR=true  → شبیه‌ساز فیزیکی مجتمع را اجرا می‌کند (پیش‌فرض توسعه)
-DAQ_SIMULATOR=false → فقط پل MQTT→Kafka برای سنسورهای واقعی
+DAQ_SIMULATOR=true  → runs the physical complex simulator (development default)
+DAQ_SIMULATOR=false → only the MQTT→Kafka bridge for real sensors
 """
 from __future__ import annotations
 

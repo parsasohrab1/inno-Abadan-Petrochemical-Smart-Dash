@@ -1,1 +1,1 @@
-"""پایش سلامت سنسور و دوربین — سه‌چراغ سبز/زرد/قرمز (README §۵، الزام کاربر)."""
+"""Sensor and camera health monitoring — green/yellow/red three-light (README §5, user requirement)."""

@@ -1,4 +1,4 @@
-"""پیکربندی مرکزی — از متغیرهای محیطی (.env) خوانده می‌شود."""
+"""Central configuration — read from environment variables (.env)."""
 from __future__ import annotations
 
 from functools import lru_cache

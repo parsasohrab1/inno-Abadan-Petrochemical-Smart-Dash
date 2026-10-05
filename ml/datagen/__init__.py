@@ -1,5 +1,5 @@
-"""مولّدهای داده‌ی سنتتیک — README §۱۰.
+"""Synthetic data generators — README §10.
 
-این ماژول‌ها هم برای «بذر» پایگاه داده (scripts/seed_synthetic.py) و هم به‌عنوان
-هسته‌ی فیزیکی شبیه‌ساز بلادرنگ در `services/data_acquisition` استفاده می‌شوند.
+These modules are used both to "seed" the database (scripts/seed_synthetic.py) and as the physical
+core of the real-time simulator in `services/data_acquisition`.
 """

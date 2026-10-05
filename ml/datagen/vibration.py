@@ -1,18 +1,18 @@
-"""تولید سیگنال ارتعاش سنتتیک با تزریق عیب — README §۱۰-۱ (بازنویسی و اصلاح‌شده).
+"""Synthetic vibration signal generation with fault injection — README §10-1 (rewritten and corrected).
 
-`synth_waveform` یک قاب سیگنال شتاب (g) می‌سازد که امضای فیزیکی عیب مشخص با شدت
-داده‌شده در آن نشسته است. مبنای امضاها: `services.common.domain.faults.SIGNATURES`.
+`synth_waveform` builds an acceleration signal frame (g) in which the physical signature of a given fault with a given
+severity is embedded. The basis of the signatures: `services.common.domain.faults.SIGNATURES`.
 
-هر عیب با ترکیبی از این مؤلفه‌ها رندر می‌شود تا در طیف خام و طیف پاکت
-(envelope spectrum) قابل تفکیک باشد:
+Each fault is rendered with a combination of these components so it can be distinguished in the raw spectrum and the envelope spectrum
+(envelope spectrum):
 
-* تن‌های گسسته در مضارب 1X (نابالانسی، ناهم‌محوری، لقی، تسمه …)
-* قطار پالس‌های ضربه‌ای دمپ‌شده که رزونانس سازه‌ای را تحریک می‌کند (عیوب یاتاقان)
-* مدولاسیون دامنه برای ساخت نوارهای کناری (رینگ داخلی ← 1X، ساچمه ← FTF)
-* تن‌های مستقل از دور (عیب الکتریکی استاتور ← ۱۰۰ Hz)
-* نوار کناری مطلق حول 1X (شکستگی میله‌ی روتور ← pole-pass ~۱.۶ Hz)
-* نویز باند‌محدود (کاویتاسیون، لقی)
-* بریدگی/کلیپینگ موج (لقی مکانیکی، سایش روتور)
+* Discrete tones at multiples of 1X (unbalance, misalignment, looseness, belt …)
+* Damped impact pulse trains that excite the structural resonance (bearing faults)
+* Amplitude modulation to build sidebands (inner race ← 1X, ball ← FTF)
+* Speed-independent tones (stator electrical fault ← 100 Hz)
+* Absolute sideband around 1X (rotor bar break ← pole-pass ~1.6 Hz)
+* Band-limited noise (cavitation, looseness)
+* Waveform clipping (mechanical looseness, rotor rub)
 """
 from __future__ import annotations
 
@@ -32,9 +32,9 @@ from services.common.domain.faults import (
 @dataclass
 class WaveformSpec:
     rpm: float = 2960.0
-    fs: float = 25600.0          # نرخ نمونه‌برداری (FR-01: ≥ ۲۵.۶ kHz)
-    n: int = 32768              # طول قاب (~۱.۲۸s → تفکیک فرکانسی ~۰.۷۸ Hz برای نوار کناری pole-pass)
-    base_g: float = 0.05        # دامنه‌ی ارتعاش پایه‌ی سالم (g RMS تقریبی)
+    fs: float = 25600.0          # sampling rate (FR-01: ≥ 25.6 kHz)
+    n: int = 32768              # frame length (~1.28s → frequency resolution ~0.78 Hz for the pole-pass sideband)
+    base_g: float = 0.05        # base healthy vibration amplitude (approx. g RMS)
     noise_g: float = 0.008
 
 
@@ -63,7 +63,7 @@ def _impulse_train(
     mod_depth: float = 0.0,
     damping: float = 900.0,
 ) -> np.ndarray:
-    """قطار پالس‌های ضربه‌ای دمپ‌شده در فرکانس عیب که رزونانس carrier_hz را تحریک می‌کند."""
+    """Damped impact pulse train at the fault frequency that excites the carrier_hz resonance."""
     n = len(t)
     sig = np.zeros(n)
     if defect_hz <= 0 or carrier_hz is None or carrier_hz <= 0:
@@ -92,7 +92,7 @@ def synth_waveform(
     spec: WaveformSpec | None = None,
     rng: np.random.Generator | None = None,
 ) -> np.ndarray:
-    """severity ∈ [0,1]. خروجی: آرایه‌ی شتاب بر حسب g با طول spec.n."""
+    """severity ∈ [0,1]. Output: acceleration array in g with length spec.n."""
     spec = spec or WaveformSpec()
     rng = rng or np.random.default_rng()
     sev = float(np.clip(severity, 0.0, 1.0))
@@ -107,7 +107,7 @@ def synth_waveform(
             return np.zeros(n)
         return amp * np.sin(2 * np.pi * freq * t + rng.uniform(0, 2 * np.pi))
 
-    # --- مؤلفه‌ی سالم: 1X + هارمونیک‌های کوچک ---
+    # --- healthy component: 1X + small harmonics ---
     sig = tone(f0, spec.base_g)
     sig += tone(2 * f0, 0.4 * spec.base_g)
     sig += tone(3 * f0, 0.18 * spec.base_g)
@@ -116,7 +116,7 @@ def synth_waveform(
         s = SIGNATURES[fault]
         gain = spec.base_g * (0.5 + 4.0 * sev)
 
-        # ۱) تن‌های گسسته در مضارب 1X
+        # 1) Discrete tones at multiples of 1X
         weights = s.spectral_weights or (1.0,) * len(s.spectral_orders)
         use_tone_mod = s.modulation_order is not None and not s.envelope_orders
         for order, w in zip(s.spectral_orders, weights, strict=False):
@@ -127,17 +127,17 @@ def synth_waveform(
                 )
             sig += comp
 
-        # ۲) تن‌های مستقل از دور (عیب الکتریکی)
+        # 2) Speed-independent tones (electrical fault)
         for fx in s.fixed_hz:
             sig += tone(fx, gain * 1.4)
 
-        # ۳) نوار کناری مطلق حول 1X + AM کند (شکستگی میله‌ی روتور، pole-pass)
+        # 3) Absolute sideband around 1X + slow AM (rotor bar break, pole-pass)
         if s.sideband_hz:
             sig += tone(f0 - s.sideband_hz, gain * 0.6)
             sig += tone(f0 + s.sideband_hz, gain * 0.6)
             sig *= 1.0 + 0.2 * sev * np.sin(2 * np.pi * 2 * s.sideband_hz * t)
 
-        # ۴) عیوب یاتاقان: قطار پالس‌های ضربه‌ای + مدولاسیون
+        # 4) Bearing faults: impact pulse train + modulation
         if s.envelope_orders and s.carrier_hz:
             mod_hz = s.modulation_order * f0 if s.modulation_order else None
             for k, eo in enumerate(s.envelope_orders):
@@ -146,24 +146,24 @@ def synth_waveform(
                     mod_hz=mod_hz, mod_depth=s.modulation_depth,
                 )
 
-        # ۵) تشدید: قله‌ی باریک با Q بالا در فرکانس ثابت (مستقل از دور)
+        # 5) Resonance: a narrow high-Q peak at a fixed frequency (speed-independent)
         if fault == FaultType.RESONANCE and s.carrier_hz:
             nb = _bandlimited_noise(n, fs, s.carrier_hz - 12, s.carrier_hz + 12, rng)
             sig += gain * 3.0 * nb + tone(s.carrier_hz, gain * 2.2)
 
-        # ۶) چرخش روغن: یک تن ناپایدار ~۰.۴۵X با پرسه‌ی فرکانسی، بدون هارمونیک
+        # 6) Oil whirl: an unstable tone ~0.45X with frequency wandering, no harmonics
         if fault == FaultType.OIL_WHIRL:
             fw = (0.42 + 0.05 * rng.random()) * f0
             wander = 1.0 + 0.008 * np.cumsum(rng.standard_normal(n)) / np.sqrt(n)
             sig += gain * 3.2 * np.sin(2 * np.pi * fw * t * wander)
 
-        # ۷) نویز باند‌محدود
+        # 7) Band-limited noise
         if s.broadband_hz and s.broadband_hz != (0.0, 0.0):
             lo, hi = s.broadband_hz
             factor = 1.4 if fault == FaultType.CAVITATION else 0.35
             sig += gain * factor * _bandlimited_noise(n, fs, lo, hi, rng)
 
-        # ۸) شکل موج: بریدگی نامتقارن برای لقی/سایش
+        # 8) Waveform: asymmetric clipping for looseness/rub
         if s.waveform_shape == "clipped":
             clip = np.max(np.abs(sig)) * (0.85 - 0.3 * sev)
             sig = np.clip(sig, -clip, clip * 1.7)
@@ -173,7 +173,7 @@ def synth_waveform(
 
 
 def degrade_severity(hours_since_onset: float, ttf_hours: float) -> float:
-    """منحنی رشد عیب: نمایی کند در آغاز، تند در انتها (شبیه واقعیت CBM)."""
+    """Fault growth curve: slow exponential at the start, steep at the end (like real CBM)."""
     if ttf_hours <= 0:
         return 1.0
     x = np.clip(hours_since_onset / ttf_hours, 0.0, 1.0)

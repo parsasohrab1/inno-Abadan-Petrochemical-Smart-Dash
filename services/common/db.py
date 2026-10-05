@@ -1,4 +1,4 @@
-"""اتصال به PostgreSQL از طریق SQLModel/SQLAlchemy."""
+"""Connection to PostgreSQL via SQLModel/SQLAlchemy."""
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -19,8 +19,8 @@ SessionLocal = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
 
 
 def init_db() -> None:
-    """ساخت جداول از روی مدل‌های ثبت‌شده (برای توسعه؛ در تولید از Alembic استفاده شود)."""
-    import services.common.domain.models  # noqa: F401  ثبت مدل‌ها
+    """Create tables from the registered models (for development; use Alembic in production)."""
+    import services.common.domain.models  # noqa: F401  register the models
 
     SQLModel.metadata.create_all(engine)
     log.info("db.schema.ready")
@@ -40,6 +40,6 @@ def session_scope() -> Iterator[Session]:
 
 
 def get_session() -> Iterator[Session]:
-    """وابستگی FastAPI."""
+    """FastAPI dependency."""
     with session_scope() as s:
         yield s

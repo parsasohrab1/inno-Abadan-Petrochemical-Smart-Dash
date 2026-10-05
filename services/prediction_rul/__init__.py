@@ -1,1 +1,1 @@
-"""پیش‌بینی عمر باقی‌مانده (RUL) و هشدار زودهنگام خرابی (FR-11، FR-12، FR-13)."""
+"""Remaining useful life (RUL) prediction and early failure alert (FR-11, FR-12, FR-13)."""

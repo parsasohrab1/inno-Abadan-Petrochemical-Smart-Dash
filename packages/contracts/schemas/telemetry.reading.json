@@ -10,7 +10,7 @@
     "kind": { "type": "string" },
     "ts": { "type": "string", "format": "date-time" },
     "value": { "type": "number" },
-    "unit": { "type": "string", "description": "واحد اندازه‌گیری — همیشه همراه مقدار" },
+    "unit": { "type": "string", "description": "Unit of measure — always accompanies the value" },
     "quality": { "enum": ["good", "uncertain", "bad"] },
     "sensor_health": { "enum": ["green", "yellow", "red"] }
   }

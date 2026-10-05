@@ -3,8 +3,8 @@ import { useState } from "react";
 import { api } from "../../lib/api";
 
 const KIND_FA: Record<string, string> = {
-  daily: "روزانه", weekly: "هفتگی", monthly: "ماهانه",
-  cost_benefit: "هزینه-فایده", ai_performance: "عملکرد AI",
+  daily: "Daily", weekly: "Weekly", monthly: "Monthly",
+  cost_benefit: "Cost-benefit", ai_performance: "AI performance",
 };
 
 export function ReportsPage() {
@@ -17,9 +17,9 @@ export function ReportsPage() {
   return (
     <div className="card">
       <div className="row" style={{ marginBottom: 10 }}>
-        <h3 style={{ margin: 0 }}>گزارش‌های تحلیلی</h3>
+        <h3 style={{ margin: 0 }}>Analytical reports</h3>
         <select value={kind} onChange={(e) => setKind(e.target.value)}>
-          <option value="">همه</option>
+          <option value="">All</option>
           {Object.entries(KIND_FA).map(([k, v]) => (
             <option key={k} value={k}>{v}</option>
           ))}
@@ -27,7 +27,7 @@ export function ReportsPage() {
       </div>
       <table>
         <thead>
-          <tr><th>تاریخ</th><th>نوع</th><th>عنوان</th><th>خلاصه</th></tr>
+          <tr><th>Date</th><th>Type</th><th>Title</th><th>Summary</th></tr>
         </thead>
         <tbody>
           {(data ?? []).map((r: any) => (
@@ -42,8 +42,8 @@ export function ReportsPage() {
       </table>
       {(data ?? []).length === 0 && (
         <div className="muted" style={{ marginTop: 10 }}>
-          هنوز گزارشی تولید نشده. زمان‌بند به‌صورت خودکار گزارش روزانه/هفتگی/ماهانه می‌سازد،
-          یا از API: <code>POST /reports/generate?kind=daily</code>
+          No report has been generated yet. The scheduler automatically creates daily/weekly/monthly reports,
+          or via the API: <code>POST /reports/generate?kind=daily</code>
         </div>
       )}
     </div>

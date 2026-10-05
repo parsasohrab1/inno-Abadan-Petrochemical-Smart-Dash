@@ -1,1 +1,1 @@
-"""کتابخانه‌ی مشترک همه‌ی میکروسرویس‌های CBM پتروشیمی آبادان."""
+"""Shared library of all CBM microservices of Abadan Petrochemical."""

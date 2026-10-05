@@ -1,4 +1,4 @@
-"""API + کارگر هشدار — مصرف events.alerts، ذخیره، حذف تکرار، اعلان، بازپخش درون‌برنامه‌ای."""
+"""API + alert worker — consumes events.alerts, stores, deduplicates, notifies, in-app replay."""
 from __future__ import annotations
 
 import asyncio
@@ -113,7 +113,7 @@ def acknowledge(
 ) -> Alert:
     a = db.get(Alert, alert_id)
     if not a:
-        raise HTTPException(404, "هشدار یافت نشد")
+        raise HTTPException(404, "Alert not found")
     a.acknowledged_by = user.sub
     a.acknowledged_at = datetime.now(timezone.utc)
     db.add(a)
@@ -127,7 +127,7 @@ def resolve(
 ) -> Alert:
     a = db.get(Alert, alert_id)
     if not a:
-        raise HTTPException(404, "هشدار یافت نشد")
+        raise HTTPException(404, "Alert not found")
     a.resolved_at = datetime.now(timezone.utc)
     if not a.acknowledged_by:
         a.acknowledged_by = user.sub

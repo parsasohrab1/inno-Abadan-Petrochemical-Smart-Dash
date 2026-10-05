@@ -1,8 +1,8 @@
-# قیمت‌نامه‌ی مدل اقتصادی — قابل ویرایش بدون تغییر کد.
-# مقادیر پیش‌فرض در services/common/economics.py و با این فایل بازنویسی می‌شوند.
+# Economics model price list — editable without code changes.
+# Default values are in services/common/economics.py and are overridden by this file.
 currency: USD
 
-products:            # دلار بر تن محصول
+products:            # dollars per ton of product
   PVC: 950
   Caustic: 450
   DDB: 1400

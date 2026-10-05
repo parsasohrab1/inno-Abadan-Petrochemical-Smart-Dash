@@ -1,4 +1,4 @@
-"""فیلتر نویز پیش از استخراج ویژگی — حذف روند، میان‌گذر، آستانه‌گذاری Wavelet."""
+"""Noise filtering before feature extraction — detrending, band-pass, Wavelet thresholding."""
 from __future__ import annotations
 
 import numpy as np

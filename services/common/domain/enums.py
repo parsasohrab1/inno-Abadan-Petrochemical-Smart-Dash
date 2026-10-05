@@ -1,19 +1,19 @@
-"""شمارشی‌های دامنه — مطابق README §۳، §۴، §۵، §۶."""
+"""Domain enumerations — per README §3, §4, §5, §6."""
 from __future__ import annotations
 
 from enum import Enum
 
 
 class HealthColor(str, Enum):
-    """سه‌چراغ پایش عملکرد سنسور/دوربین/تجهیز (README §۵-۱ + الزام کاربر)."""
+    """Three-light performance monitoring of sensor/camera/equipment (README §5-1 + user requirement)."""
 
-    GREEN = "green"   # سالم
-    YELLOW = "yellow"  # هشدار / نیاز به کالیبراسیون
-    RED = "red"        # خطا / نیاز به تعویض  (README واژه‌ی «نارنجی» را به کار برده)
+    GREEN = "green"   # healthy
+    YELLOW = "yellow"  # warning / needs calibration
+    RED = "red"        # fault / needs replacement  (README used the word "orange")
 
 
 class SignalQuality(str, Enum):
-    """کیفیت داده مطابق ISO 13374."""
+    """Data quality per ISO 13374."""
 
     GOOD = "good"
     UNCERTAIN = "uncertain"
@@ -41,7 +41,7 @@ class CameraKind(str, Enum):
     HYPERSPECTRAL = "hyperspectral"
 
 
-# واحد اندازه‌گیری پیش‌فرض هر نوع سنسور (README §۳) — در داشبرد کنار مقدار نمایش داده می‌شود
+# default unit of measure of each sensor type (README §3) — shown next to the value in the dashboard
 DEFAULT_UNIT: dict[str, str] = {
     SensorKind.ACCELEROMETER_TRIAX: "g",
     SensorKind.VELOMETER: "mm/s",
@@ -74,14 +74,14 @@ class EquipmentType(str, Enum):
 
 
 class EquipmentRunState(str, Enum):
-    """وضعیت روشن/خاموش برای کنترل Auto Operation."""
+    """On/off state for Auto Operation control."""
 
     RUNNING = "running"
     STOPPED = "stopped"
-    STANDBY = "standby"      # زاپاس آماده‌به‌کار
+    STANDBY = "standby"      # standby ready
     STARTING = "starting"
     STOPPING = "stopping"
-    TRIPPED = "tripped"      # توقف اضطراری
+    TRIPPED = "tripped"      # emergency stop
     MAINTENANCE = "maintenance"
 
 
@@ -93,7 +93,7 @@ class Criticality(str, Enum):
 
 
 class FaultType(str, Enum):
-    """۱۶ عیب رایج تجهیزات دوار (FR-09)."""
+    """16 common faults of rotating equipment (FR-09)."""
 
     NORMAL = "normal"
     UNBALANCE = "unbalance"
@@ -122,11 +122,11 @@ class AlertSeverity(str, Enum):
 
 
 class AutoActionType(str, Enum):
-    """اقدامات خودکار (README §۶-۳)."""
+    """Automatic actions (README §6-3)."""
 
     PARAMETER_ADJUSTMENT = "parameter_adjustment"
-    LINE_SWITCH = "line_switch"          # تعویض به خط پشتیبان
-    SPARE_CHANGEOVER = "spare_changeover"  # روشن‌کردن زاپاس، خاموش‌کردن اصلی
+    LINE_SWITCH = "line_switch"          # switch to the backup line
+    SPARE_CHANGEOVER = "spare_changeover"  # start the standby, shut down the main
     EQUIPMENT_START = "equipment_start"
     EQUIPMENT_STOP = "equipment_stop"
     MAINTENANCE_REQUEST = "maintenance_request"
@@ -147,9 +147,9 @@ class ActionStatus(str, Enum):
 
 
 class AutoOpMode(str, Enum):
-    ADVISORY = "advisory"      # فقط پیشنهاد
-    SUPERVISED = "supervised"  # اجرا پس از تأیید انسانی
-    AUTONOMOUS = "autonomous"  # اجرای خودکار به‌جز اقدامات ایمنی‌بحرانی
+    ADVISORY = "advisory"      # suggestion only
+    SUPERVISED = "supervised"  # execution after human approval
+    AUTONOMOUS = "autonomous"  # automatic execution except for safety-critical actions
 
 
 class Role(str, Enum):

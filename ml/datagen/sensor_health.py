@@ -1,4 +1,4 @@
-"""زنجیره‌ی وضعیت سلامت سنسور — README §۱۰-۲ (بازنویسی‌شده با مدل مارکوف صریح)."""
+"""Sensor health state chain — README §10-2 (rewritten with an explicit Markov model)."""
 from __future__ import annotations
 
 import numpy as np
@@ -6,11 +6,11 @@ import numpy as np
 from services.common.domain.enums import HealthColor
 from services.common.domain.health import DeviceHealthInputs, evaluate_device_health
 
-# ماتریس انتقال روزانه (green, yellow, red)
+# daily transition matrix (green, yellow, red)
 TRANSITION = {
     HealthColor.GREEN: [0.985, 0.012, 0.003],
     HealthColor.YELLOW: [0.10, 0.83, 0.07],
-    HealthColor.RED: [0.03, 0.00, 0.97],  # تا تعویض در قرمز می‌ماند
+    HealthColor.RED: [0.03, 0.00, 0.97],  # stays red until replaced
 }
 _ORDER = [HealthColor.GREEN, HealthColor.YELLOW, HealthColor.RED]
 
@@ -20,7 +20,7 @@ def next_status(current: HealthColor, rng: np.random.Generator) -> HealthColor:
 
 
 def synth_health_metrics(status: HealthColor, rng: np.random.Generator) -> DeviceHealthInputs:
-    """پارامترهای ۶‌گانه‌ی متناظر با وضعیت هدف (README §۵-۲)."""
+    """The 6 parameters corresponding to the target state (README §5-2)."""
     if status == HealthColor.GREEN:
         return DeviceHealthInputs(
             supply_voltage=24 + rng.normal(0, 0.3),
@@ -56,7 +56,7 @@ def synth_health_metrics(status: HealthColor, rng: np.random.Generator) -> Devic
 
 
 def verify_rules_consistency(n: int = 2000, seed: int = 0) -> float:
-    """نسبت مواردی که قانون رنگ با وضعیت هدف مولّد می‌خواند (کیفیت داده‌ی آموزش)."""
+    """Ratio of cases where the color rule reads the generator's target state (training data quality)."""
     rng = np.random.default_rng(seed)
     hits = 0
     for _ in range(n):

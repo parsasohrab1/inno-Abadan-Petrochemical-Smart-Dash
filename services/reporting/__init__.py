@@ -1,1 +1,1 @@
-"""سرویس گزارش‌دهی — تولید خودکار گزارش‌های دوره‌ای و تحلیل هزینه-فایده (FR-19)."""
+"""Reporting service — automatic generation of periodic reports and cost-benefit analysis (FR-19)."""

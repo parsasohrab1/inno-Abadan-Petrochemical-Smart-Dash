@@ -1,4 +1,4 @@
-"""احراز هویت JWT + کنترل دسترسی نقش‌محور (RBAC) — NFR-11, NFR-12."""
+"""JWT authentication + role-based access control (RBAC) — NFR-11, NFR-12."""
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -17,7 +17,7 @@ _settings = get_settings()
 _pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 
-# سلسله‌مراتب دسترسی — هر نقش، دسترسی نقش‌های پایین‌تر را نیز دارد
+# access hierarchy — each role also has the access of lower roles
 ROLE_RANK: dict[str, int] = {
     Role.VIEWER: 0,
     Role.OPERATOR: 1,
@@ -59,22 +59,22 @@ def decode_token(token: str) -> TokenData:
         payload = jwt.decode(token, _settings.jwt_secret, algorithms=[_settings.jwt_alg])
         return TokenData(sub=payload["sub"], role=payload["role"], full_name=payload.get("full_name"))
     except (JWTError, KeyError) as exc:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "توکن نامعتبر") from exc
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid token") from exc
 
 
 async def current_user(token: Annotated[str | None, Depends(oauth2_scheme)]) -> TokenData:
     if not token:
-        # در حالت توسعه اجازه‌ی دسترسی viewer بدون توکن (در تولید غیرفعال شود)
+        # in development, allow viewer access without a token (disable in production)
         if _settings.environment == "development":
             return TokenData(sub="dev", role=Role.MANAGER, full_name="Developer")
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "نیاز به احراز هویت")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Authentication required")
     return decode_token(token)
 
 
 def require_role(minimum: Role):
     async def _guard(user: Annotated[TokenData, Depends(current_user)]) -> TokenData:
         if ROLE_RANK.get(user.role, -1) < ROLE_RANK[minimum]:
-            raise HTTPException(status.HTTP_403_FORBIDDEN, "دسترسی کافی نیست")
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "Insufficient access")
         return user
 
     return _guard

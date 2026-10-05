@@ -1,13 +1,13 @@
-"""مدل اقتصادی — محاسبه‌ی لحظه‌ای «سود ($)» و «صرفه‌جویی ($)» برای داشبرد مدیریتی.
+"""Economics model — instantaneous computation of "profit ($)" and "savings ($)" for the management dashboard.
 
-الزام کاربر: «هر لحظه میزان سود به دلار و میزان صرفه‌جویی به دلار در داشبرد
-برای مدیر نمایش داده شود».
+User requirement: "show the amount of profit in dollars and the amount of savings in dollars at every moment on the
+dashboard for the manager".
 
-منابع داده:
-- نرخ تولید لحظه‌ای: فلومترهای خط تولید (telemetry.process → InfluxDB)
-- قیمت محصول/خوراک/انرژی: price book (قابل ویرایش در `config/economics.yaml`)
-- صرفه‌جویی CBM: مجموع اثر اقدامات Auto Operation + خرابی‌های پیش‌گیری‌شده
-  (RUL alert که منجر به تعمیر برنامه‌ریزی‌شده شد) نسبت به سناریوی «بدون CBM».
+Data sources:
+- Instantaneous production rate: production-line flow meters (telemetry.process → InfluxDB)
+- Product/feedstock/energy price: price book (editable in `config/economics.yaml`)
+- CBM savings: sum of the impact of Auto Operation actions + prevented failures
+  (RUL alerts that led to planned maintenance) relative to the "without CBM" scenario.
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ DEFAULT_PRICE_BOOK: dict = {
         "EDC": 350.0,
         "VCM": 800.0,
     },
-    "feedstock_cost_per_ton_product": {  # $/ton محصول
+    "feedstock_cost_per_ton_product": {  # $/ton of product
         "PVC": 520.0,
         "Caustic": 120.0,
         "DDB": 700.0,
@@ -39,13 +39,13 @@ DEFAULT_PRICE_BOOK: dict = {
         "electricity_usd_per_kwh": 0.09,
         "steam_usd_per_ton": 22.0,
     },
-    "downtime_cost_usd_per_hour": {  # هزینه‌ی توقف غیربرنامه‌ریزی‌شده هر خط
+    "downtime_cost_usd_per_hour": {  # unplanned downtime cost of each line
         "default": 12000.0,
         "PVC": 18000.0,
         "Caustic": 9000.0,
         "DDB": 7000.0,
     },
-    # هزینه‌ی خرابی فاجعه‌بار (تعویض کامل + خسارت جانبی) بر اساس بحرانی‌بودن تجهیز
+    # catastrophic failure cost (full replacement + collateral damage) based on equipment criticality
     "catastrophic_failure_cost_usd": {
         "pump": 45000.0,
         "compressor": 380000.0,
@@ -54,11 +54,11 @@ DEFAULT_PRICE_BOOK: dict = {
         "motor": 40000.0,
         "default": 60000.0,
     },
-    # نرخ پایه‌ی خرابی غیرمنتظره بدون CBM (رخداد در سال به ازای هر تجهیز بحرانی)
+    # base rate of unexpected failures without CBM (occurrences per year per critical equipment)
     "baseline_unplanned_failures_per_year_per_critical_equipment": 0.9,
-    # نسبت خرابی‌هایی که CBM می‌تواند زودتر تشخیص دهد و به تعمیر برنامه‌ریزی‌شده تبدیل کند
+    # share of failures that CBM can detect earlier and convert into planned maintenance
     "cbm_preventable_fraction": 0.75,
-    # کاهش هزینه‌ی هر تعمیر وقتی برنامه‌ریزی‌شده باشد (نسبت به اضطراری)
+    # reduction in cost of each repair when planned (relative to emergency)
     "planned_vs_unplanned_repair_saving_fraction": 0.6,
 }
 
@@ -80,8 +80,8 @@ def load_price_book(path: str | Path = "config/economics.yaml") -> dict:
 class LineProduction:
     line_code: str
     product: str
-    rate_tph: float              # نرخ تولید لحظه‌ای (تن بر ساعت) از فلومتر
-    power_kw: float = 0.0        # توان مصرفی لحظه‌ای خط
+    rate_tph: float              # instantaneous production rate (tons per hour) from the flow meter
+    power_kw: float = 0.0        # instantaneous power consumption of the line
     steam_tph: float = 0.0
 
 
@@ -156,7 +156,7 @@ def planned_repair_saving(unplanned_repair_cost_usd: float, price_book: dict | N
 def annualized_baseline_saving(
     n_critical_equipment: int, price_book: dict | None = None
 ) -> float:
-    """پتانسیل صرفه‌جویی سالانه‌ی مرجع (برای مقایسه‌ی روند)."""
+    """Reference annual savings potential (for trend comparison)."""
     pb = price_book or DEFAULT_PRICE_BOOK
     failures = (
         n_critical_equipment

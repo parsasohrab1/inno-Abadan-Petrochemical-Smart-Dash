@@ -1,4 +1,4 @@
-"""API + کارگر پس‌زمینه‌ی Auto Operation."""
+"""Auto Operation API + background worker."""
 from __future__ import annotations
 
 import asyncio
@@ -71,7 +71,7 @@ def pending_actions(db: DbSession) -> list[AutoAction]:
 def get_action(action_id: int, db: DbSession) -> AutoAction:
     a = db.get(AutoAction, action_id)
     if not a:
-        raise HTTPException(404, "اقدام یافت نشد")
+        raise HTTPException(404, "Action not found")
     return a
 
 
@@ -82,7 +82,7 @@ async def approve_action(
 ) -> dict:
     a = db.get(AutoAction, action_id)
     if not a or a.status != ActionStatus.AWAITING_APPROVAL:
-        raise HTTPException(400, "اقدام در انتظار تأیید نیست")
+        raise HTTPException(400, "The action is not pending approval")
     a.status = ActionStatus.APPROVED
     a.approved_by = user.sub
     a.decided_at = datetime.now(timezone.utc)
@@ -99,7 +99,7 @@ def reject_action(
 ) -> AutoAction:
     a = db.get(AutoAction, action_id)
     if not a or a.status != ActionStatus.AWAITING_APPROVAL:
-        raise HTTPException(400, "اقدام در انتظار تأیید نیست")
+        raise HTTPException(400, "The action is not pending approval")
     a.status = ActionStatus.REJECTED
     a.approved_by = user.sub
     a.decided_at = datetime.now(timezone.utc)

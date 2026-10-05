@@ -1,41 +1,41 @@
-# قرارداد API — دروازه‌ی api-gateway (پورت ۸۰۰۰)
+# API contract — api-gateway (port 8000)
 
-همه‌ی مسیرهای `/api/*` نیازمند هدر `Authorization: Bearer <token>` هستند
-(در حالت `ENVIRONMENT=development` نقش پیش‌فرض manager فرض می‌شود).
+All `/api/*` paths require the header `Authorization: Bearer <token>`
+(in `ENVIRONMENT=development` the default role manager is assumed).
 
-## احراز هویت
+## Authentication
 
-| متد | مسیر | توضیح |
+| Method | Path | Description |
 |---|---|---|
-| POST | `/auth/login` | فرم `username`/`password` → `access_token` |
-| GET | `/auth/me` | اطلاعات کاربر جاری |
-| GET | `/auth/users` | فهرست کاربران (فقط admin) |
+| POST | `/auth/login` | form `username`/`password` → `access_token` |
+| GET | `/auth/me` | current user information |
+| GET | `/auth/users` | list of users (admin only) |
 
-کاربران نمونه (seed خودکار): `admin/admin123`، `manager/manager123`، `engineer/engineer123`،
-`operator/operator123`، `viewer/viewer123`.
+Sample users (automatic seed): `admin/admin123`, `manager/manager123`, `engineer/engineer123`,
+`operator/operator123`, `viewer/viewer123`.
 
-## داشبرد
+## Dashboard
 
-| متد | مسیر | خروجی |
+| Method | Path | Output |
 |---|---|---|
-| GET | `/api/overview` | شمارش تجهیز/سنسور/دوربین به تفکیک رنگ، هشدارها، واحدها |
-| GET | `/api/heatmap` | آرایه‌ی تجهیزات با رنگ سلامت و مختصات واحد/خط |
-| GET | `/api/equipment/{tag}` | جزئیات + آخرین تشخیص/RUL + روندها (۷/۳۰ روز) |
-| GET | `/api/equipment/{tag}/spectrum` | دامنه در مضارب ۰٫۵X..۵X برای نمودار FFT |
-| GET | `/api/alerts?active_only=true` | هشدارهای فعال |
-| GET | `/api/predictions` | RUL همه‌ی تجهیزات، مرتب بر اساس فوریت |
-| GET | `/api/sensor-health?color=red` | سه‌چراغ سنسور/دوربین + واحد اندازه‌گیری |
-| GET | `/api/auto-operation/actions` `/stats` | اقدامات و آمار Auto Operation |
-| POST | `/api/auto-operation/actions/{id}/approve\|reject` | تصمیم انسانی (operator) |
-| POST | `/api/auto-operation/control/{tag}/start\|stop\|changeover` | کنترل مستقیم (operator) |
-| GET | `/api/economics/live` | **سود و صرفه‌جویی لحظه‌ای به دلار** (کارت مدیریتی) |
-| GET | `/api/economics/history?hours=24` | سری زمانی اقتصادی (manager) |
-| GET | `/api/reports?kind=daily` | فهرست گزارش‌ها |
-| WS | `/ws` | پخش زنده: کانال‌های `alert`, `auto_action`, `diagnosis`, `rul`, `economics` |
+| GET | `/api/overview` | equipment/sensor/camera counts by color, alerts, units |
+| GET | `/api/heatmap` | array of equipment with health color and unit/line coordinates |
+| GET | `/api/equipment/{tag}` | details + latest diagnosis/RUL + trends (7/30 days) |
+| GET | `/api/equipment/{tag}/spectrum` | amplitude at multiples 0.5X..5X for the FFT chart |
+| GET | `/api/alerts?active_only=true` | active alerts |
+| GET | `/api/predictions` | RUL of all equipment, sorted by urgency |
+| GET | `/api/sensor-health?color=red` | sensor/camera three-light + unit of measure |
+| GET | `/api/auto-operation/actions` `/stats` | Auto Operation actions and statistics |
+| POST | `/api/auto-operation/actions/{id}/approve\|reject` | human decision (operator) |
+| POST | `/api/auto-operation/control/{tag}/start\|stop\|changeover` | direct control (operator) |
+| GET | `/api/economics/live` | **instantaneous profit and savings in dollars** (management card) |
+| GET | `/api/economics/history?hours=24` | economics time series (manager) |
+| GET | `/api/reports?kind=daily` | list of reports |
+| WS | `/ws` | live broadcast: channels `alert`, `auto_action`, `diagnosis`, `rul`, `economics` |
 
-## سرویس‌های داخلی (بدون عبور از gateway)
+## Internal services (not passing through the gateway)
 
-| سرویس | پورت | نمونه مسیر |
+| Service | Port | Sample path |
 |---|---|---|
 | asset-registry | 8001 | `/equipment/{tag}/full`, `/coverage/unmonitored`, `/stats` |
 | auto-operation | 8002 | `/actions/pending`, `/policy` |
@@ -43,12 +43,12 @@
 | alerting | 8004 | `/alerts/summary`, `/alerts/{id}/ack` |
 | reporting | 8005 | `/reports/generate?kind=cost_benefit` |
 
-## موضوعات Kafka (AsyncAPI در `packages/contracts/asyncapi`)
+## Kafka topics (AsyncAPI in `packages/contracts/asyncapi`)
 
 ```
 telemetry.vibration      → signal-processing
 telemetry.acoustic       → ai-engine
-telemetry.process        → economics (نرخ تولید), tsdb
+telemetry.process        → economics (production rate), tsdb
 telemetry.device_health  → sensor-health
 analytics.features       → ai-engine
 analytics.diagnosis      → prediction-rul, auto-operation

@@ -1,4 +1,4 @@
-"""دروازه‌ی API — نقطه‌ی ورود واحد داشبرد (FR-18، FR-20)."""
+"""API gateway — the single entry point of the dashboard (FR-18, FR-20)."""
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -83,7 +83,7 @@ def overview(db: DbSession, user: Annotated[TokenData, Depends(require_role(Role
 
 @app.get("/api/heatmap", tags=["dashboard"])
 def heatmap(db: DbSession, user: Annotated[TokenData, Depends(require_role(Role.VIEWER))]) -> list[dict]:
-    """نقشه‌ی حرارتی: هر تجهیز با رنگ سلامت و مختصات سلسله‌مراتبی."""
+    """Heat map: each equipment with its health color and hierarchical coordinates."""
     rows = db.exec(
         select(Equipment, ProductionLine, Unit)
         .join(ProductionLine, Equipment.line_id == ProductionLine.id)
@@ -108,7 +108,7 @@ async def equipment_detail(
     eq = db.exec(select(Equipment).where(Equipment.tag == tag)).first()
     if not eq:
         from fastapi import HTTPException
-        raise HTTPException(404, "تجهیز یافت نشد")
+        raise HTTPException(404, "Equipment not found")
 
     last_diag = db.exec(
         select(Diagnosis).where(Diagnosis.equipment_tag == tag).order_by(Diagnosis.ts.desc())
@@ -145,7 +145,7 @@ async def equipment_detail(
 
 @app.get("/api/equipment/{tag}/spectrum", tags=["dashboard"])
 def equipment_spectrum(tag: str, user: Annotated[TokenData, Depends(require_role(Role.VIEWER))]) -> dict:
-    """آخرین دامنه در مضارب فرکانس چرخش برای نمودار FFT/Waterfall."""
+    """Latest amplitude at multiples of the rotation frequency for the FFT/Waterfall chart."""
     orders = ["ord_0.5x", "ord_1x", "ord_2x", "ord_3x", "ord_4x", "ord_5x"]
     return {
         "orders": {
@@ -247,7 +247,7 @@ async def ao_decide(
 ) -> dict:
     if decision not in {"approve", "reject"}:
         from fastapi import HTTPException
-        raise HTTPException(400, "تصمیم نامعتبر")
+        raise HTTPException(400, "Invalid decision")
     ao = auto_operation()
     try:
         auth = request.headers.get("authorization")
@@ -266,7 +266,7 @@ async def ao_control(
 ) -> dict:
     if action not in {"start", "stop", "changeover"}:
         from fastapi import HTTPException
-        raise HTTPException(400, "اقدام نامعتبر")
+        raise HTTPException(400, "Invalid action")
     ao = auto_operation()
     try:
         auth = request.headers.get("authorization")

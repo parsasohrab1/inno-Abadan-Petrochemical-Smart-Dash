@@ -1,4 +1,4 @@
-"""مسیرهای احراز هویت — ورود، ساخت کاربر اولیه، 2FA (اختیاری)."""
+"""Authentication routes — login, initial user creation, 2FA (optional)."""
 from __future__ import annotations
 
 from typing import Annotated
@@ -23,11 +23,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 DbSession = Annotated[Session, Depends(get_session)]
 
 _DEFAULT_USERS = [
-    ("admin", "مدیر سیستم", "admin123", Role.ADMIN),
-    ("manager", "مدیر ارشد", "manager123", Role.MANAGER),
-    ("engineer", "مهندس بهره‌برداری", "engineer123", Role.ENGINEER),
-    ("operator", "اپراتور کنترل‌خانه", "operator123", Role.OPERATOR),
-    ("viewer", "بازدیدکننده", "viewer123", Role.VIEWER),
+    ("admin", "System Administrator", "admin123", Role.ADMIN),
+    ("manager", "Senior Manager", "manager123", Role.MANAGER),
+    ("engineer", "Operations Engineer", "engineer123", Role.ENGINEER),
+    ("operator", "Control Room Operator", "operator123", Role.OPERATOR),
+    ("viewer", "Viewer", "viewer123", Role.VIEWER),
 ]
 
 
@@ -44,7 +44,7 @@ def ensure_seed_users(session: Session) -> None:
 def login(form: Annotated[OAuth2PasswordRequestForm, Depends()], db: DbSession) -> dict:
     user = db.exec(select(User).where(User.username == form.username)).first()
     if not user or not verify_password(form.password, user.hashed_password) or not user.is_active:
-        raise HTTPException(401, "نام کاربری یا گذرواژه نادرست است")
+        raise HTTPException(401, "Username or password is incorrect")
     token = create_access_token(user.username, user.role, user.full_name)
     return {"access_token": token, "token_type": "bearer", "role": user.role,
             "full_name": user.full_name}

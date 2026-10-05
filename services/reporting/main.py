@@ -1,4 +1,4 @@
-"""API گزارش‌دهی + زمان‌بند تولید خودکار (FR-19)."""
+"""Reporting API + automatic generation scheduler (FR-19)."""
 from __future__ import annotations
 
 import json
@@ -57,7 +57,7 @@ def list_reports(db: DbSession, kind: str | None = None, limit: int = 50) -> lis
 def get_report(report_id: int, db: DbSession) -> dict:
     r = db.get(Report, report_id)
     if not r:
-        raise HTTPException(404, "گزارش یافت نشد")
+        raise HTTPException(404, "Report not found")
     return {**r.model_dump(), "payload": json.loads(r.payload_json or "{}")}
 
 
@@ -67,6 +67,6 @@ def generate_now(
     user: Annotated[TokenData, Depends(require_role(Role.ENGINEER))],
 ) -> dict:
     if kind not in {"daily", "weekly", "monthly", "cost_benefit", "ai_performance"}:
-        raise HTTPException(400, "نوع گزارش نامعتبر")
+        raise HTTPException(400, "Invalid report type")
     r = generate(kind)
     return {**r.model_dump(), "payload": json.loads(r.payload_json or "{}")}

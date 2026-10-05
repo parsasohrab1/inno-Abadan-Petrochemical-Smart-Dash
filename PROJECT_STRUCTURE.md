@@ -1,107 +1,107 @@
-# اسکلت پروژه — داشبرد هوشمند CBM پتروشیمی آبادان
+# Project skeleton — Abadan Petrochemical CBM Smart Dashboard
 
-> این سند ساختار مخزن (monorepo) و نقشه‌ی راه پیاده‌سازی را توصیف می‌کند.
-> شرح کامل نیازمندی‌ها در [`README.md`](README.md) (سند SRS) آمده است.
+> This document describes the repository (monorepo) structure and the implementation roadmap.
+> The full description of the requirements is in [`README.md`](README.md) (the SRS document).
 
-## نمای کلی
+## Overview
 
 ```
 inno-Abadan-Petrochemical-Smart-Dash/
-├── README.md                     # سند SRS و شرح دامنه (منبع حقیقت نیازمندی‌ها)
-├── PROJECT_STRUCTURE.md           # همین سند
-├── docker-compose.yml            # بالا آوردن کل پشته برای توسعه‌ی محلی
-├── Makefile                      # میان‌بُرهای رایج (up, down, seed, lint, test)
-├── .env.example                  # الگوی متغیرهای محیطی
+├── README.md                     # SRS document and domain description (source of truth for requirements)
+├── PROJECT_STRUCTURE.md           # this document
+├── docker-compose.yml            # bring up the whole stack for local development
+├── Makefile                      # common shortcuts (up, down, seed, lint, test)
+├── .env.example                  # environment variable template
 │
-├── docs/                         # مستندات معماری و طراحی
-│   ├── architecture.md           # لایه‌های ISO 13374 و جریان داده
-│   ├── data-model.md             # سلسله‌مراتب دارایی‌ها: مجتمع→واحد→خط→تجهیز→سنسور/دوربین
-│   ├── auto-operation.md         # طراحی اوپراتور هوشمند (۵ سطح + کنترل روشن/خاموش)
-│   ├── api.md                    # قرارداد REST/WebSocket دروازه‌ی API
-│   └── standards.md              # نگاشت به ISO 17359 / 14224 / 13374 / IEC 62443
+├── docs/                         # architecture and design documentation
+│   ├── architecture.md           # ISO 13374 layers and data flow
+│   ├── data-model.md             # asset hierarchy: complex→unit→line→equipment→sensor/camera
+│   ├── auto-operation.md         # smart operator design (5 levels + on/off control)
+│   ├── api.md                    # REST/WebSocket contract of the API gateway
+│   └── standards.md              # mapping to ISO 17359 / 14224 / 13374 / IEC 62443
 │
 ├── packages/
-│   └── contracts/                # قراردادهای مشترک بین سرویس‌ها و فرانت‌اند
-│       ├── openapi/              # اسپک OpenAPI هر سرویس
-│       ├── asyncapi/            # اسپک AsyncAPI برای موضوعات Kafka/MQTT
-│       └── schemas/             # JSON Schema رویدادها (telemetry, alert, action)
+│   └── contracts/                # shared contracts between services and the frontend
+│       ├── openapi/              # OpenAPI spec of each service
+│       ├── asyncapi/            # AsyncAPI spec for Kafka/MQTT topics
+│       └── schemas/             # JSON Schema of events (telemetry, alert, action)
 │
 ├── apps/
-│   └── dashboard/                # فرانت‌اند React + Vite + TypeScript (RTL/فارسی)
+│   └── dashboard/                # React + Vite + TypeScript frontend (RTL/Persian)
 │       └── src/
-│           ├── features/         # هر صفحه‌ی داشبرد یک ماژول مستقل
-│           │   ├── overview/            # نقشه‌ی حرارتی مجتمع (۵-۱ SRS)
-│           │   ├── equipment/           # جزئیات تجهیز + نمودار FFT/Waterfall
-│           │   ├── alerts/              # هشدارهای لحظه‌ای اولویت‌بندی‌شده
-│           │   ├── prediction/          # RUL و روند ۷/۳۰/۹۰ روزه
-│           │   ├── auto-operation/      # وضعیت و لاگ اقدامات خودکار + کنترل روشن/خاموش
-│           │   ├── sensor-health/       # کدهای رنگی سلامت سنسور (سبز/زرد/نارنجی)
-│           │   ├── acoustic/            # تحلیل صوتی و تشخیص نشتی
-│           │   └── reports/             # گزارش‌های روزانه/هفتگی/ماهانه
-│           ├── components/       # اجزای UI مشترک (Gauge, HealthBadge, AssetTree ...)
-│           ├── lib/api/          # کلاینت REST + WebSocket
+│           ├── features/         # each dashboard page is an independent module
+│           │   ├── overview/            # complex heat map (SRS 4-1)
+│           │   ├── equipment/           # equipment details + FFT/Waterfall chart
+│           │   ├── alerts/              # prioritized real-time alerts
+│           │   ├── prediction/          # RUL and 7/30/90-day trends
+│           │   ├── auto-operation/      # status and log of automatic actions + on/off control
+│           │   ├── sensor-health/       # sensor health color codes (green/yellow/orange)
+│           │   ├── acoustic/            # acoustic analysis and leak detection
+│           │   └── reports/             # daily/weekly/monthly reports
+│           ├── components/       # shared UI components (Gauge, HealthBadge, AssetTree ...)
+│           ├── lib/api/          # REST + WebSocket client
 │           ├── hooks/            # React hooks (useLiveTelemetry, useAssetTree ...)
-│           ├── store/            # وضعیت سراسری (Zustand)
-│           ├── i18n/             # ترجمه‌ها (fa پیش‌فرض، en)
-│           └── theme/            # تم روشن/تیره + جهت راست‌به‌چپ
+│           ├── store/            # global state (Zustand)
+│           ├── i18n/             # translations (fa default, en)
+│           └── theme/            # light/dark theme + right-to-left direction
 │
-├── services/                     # میکروسرویس‌های بک‌اند (Python / FastAPI) — NFR-17
-│   ├── common/                   # کتابخانه‌ی مشترک (config, logging, db, kafka, auth, مدل‌های دامنه)
-│   ├── api-gateway/              # BFF: احراز هویت، RBAC، تجمیع، WebSocket به داشبرد
-│   ├── asset-registry/           # CRUD سلسله‌مراتب دارایی و نگاشت تجهیز↔سنسور↔دوربین
-│   ├── data-acquisition/         # دریافت از MQTT/DCS/OPC-UA → Kafka (FR-01..05)
-│   ├── signal-processing/        # FFT/Wavelet، فیلتر نویز، استخراج ویژگی (FR-06,07)
-│   ├── ai-engine/                # LSTM+CNN تشخیص ۱۶ عیب، تحلیل طیفی صوت (FR-08,09,10)
-│   ├── prediction-rul/           # تخمین RUL و هشدار ۷۲ ساعته (FR-11,12,13)
-│   ├── sensor-health/            # پایش ۶ پارامتر سلامت سنسور و رنگ‌بندی (بخش ۵)
-│   ├── auto-operation/           # موتور تصمیم + کنترل راه‌اندازی/توقف/تعویض زاپاس (FR-14..17)
-│   ├── alerting/                 # قواعد هشدار، اولویت‌بندی، اعلان ایمیل/پیامک/این‌اپ (FR-21)
-│   └── reporting/                # تولید خودکار گزارش و تحلیل هزینه-فایده (FR-19)
+├── services/                     # backend microservices (Python / FastAPI) — NFR-17
+│   ├── common/                   # shared library (config, logging, db, kafka, auth, domain models)
+│   ├── api-gateway/              # BFF: authentication, RBAC, aggregation, WebSocket to the dashboard
+│   ├── asset-registry/           # CRUD of the asset hierarchy and equipment↔sensor↔camera mapping
+│   ├── data-acquisition/         # ingestion from MQTT/DCS/OPC-UA → Kafka (FR-01..05)
+│   ├── signal-processing/        # FFT/Wavelet, noise filtering, feature extraction (FR-06,07)
+│   ├── ai-engine/                # LSTM+CNN detection of 16 faults, acoustic spectral analysis (FR-08,09,10)
+│   ├── prediction-rul/           # RUL estimation and 72-hour alerts (FR-11,12,13)
+│   ├── sensor-health/            # monitoring 6 sensor health parameters and color coding (section 5)
+│   ├── auto-operation/           # decision engine + start/stop/standby swap control (FR-14..17)
+│   ├── alerting/                 # alert rules, prioritization, email/SMS/in-app notifications (FR-21)
+│   └── reporting/                # automatic report generation and cost-benefit analysis (FR-19)
 │
-├── ml/                           # چرخه‌ی حیات مدل‌ها
-│   ├── datagen/                  # مولّدهای داده‌ی سنتتیک (بخش ۱۰ SRS)
-│   │   ├── vibration.py          # داده‌ی ارتعاش + تزریق ۴ الگوی خرابی
-│   │   ├── acoustic.py           # داده‌ی صوتی + رویداد نشتی
-│   │   ├── sensor_health.py      # زنجیره‌ی وضعیت سبز/زرد/نارنجی
-│   │   ├── rul.py                # برچسب‌های RUL
-│   │   ├── auto_operation.py     # لاگ اقدامات خودکار
-│   │   ├── process.py            # داده‌ی فرآیندی DCS
-│   │   └── assets.py             # ساخت سلسله‌مراتب دارایی و نگاشت سنسور/دوربین
-│   ├── features/                 # پایپ‌لاین مهندسی ویژگی مشترک با سرویس signal-processing
-│   ├── models/                   # معماری مدل‌ها (fault_cnn_lstm، rul_estimator، acoustic_net)
-│   ├── training/                 # اسکریپت‌های آموزش و ارزیابی (Accuracy≥۹۵٪، FAR<۵٪)
-│   └── notebooks/                # اکتشاف داده
+├── ml/                           # model lifecycle
+│   ├── datagen/                  # synthetic data generators (SRS section 10)
+│   │   ├── vibration.py          # vibration data + injection of 4 failure patterns
+│   │   ├── acoustic.py           # acoustic data + leak events
+│   │   ├── sensor_health.py      # green/yellow/orange status chain
+│   │   ├── rul.py                # RUL labels
+│   │   ├── auto_operation.py     # log of automatic actions
+│   │   ├── process.py            # DCS process data
+│   │   └── assets.py             # building the asset hierarchy and sensor/camera mapping
+│   ├── features/                 # feature engineering pipeline shared with the signal-processing service
+│   ├── models/                   # model architectures (fault_cnn_lstm, rul_estimator, acoustic_net)
+│   ├── training/                 # training and evaluation scripts (Accuracy≥95%, FAR<5%)
+│   └── notebooks/                # data exploration
 │
 ├── data/
-│   ├── raw/                      # داده‌ی خام واردشده (نسخه‌کنترل نمی‌شود)
-│   └── synthetic/                # خروجی مولّدهای بخش ۱۰ (نسخه‌کنترل نمی‌شود)
+│   ├── raw/                      # ingested raw data (not version-controlled)
+│   └── synthetic/                # output of the section 10 generators (not version-controlled)
 │
 ├── infra/
-│   ├── docker/                   # Dockerfile پایه و اسکریپت‌های build
-│   ├── grafana/                  # provisioning داشبورد و datasource
-│   ├── mosquitto/                # پیکربندی بروکر MQTT
-│   ├── influxdb/                 # اسکریپت راه‌اندازی bucket
-│   ├── postgres/                 # مهاجرت‌های اولیه‌ی اسکیما
-│   └── k8s/                      # مانيفست‌های استقرار (helm/kustomize) — فاز بعد
+│   ├── docker/                   # base Dockerfile and build scripts
+│   ├── grafana/                  # dashboard and datasource provisioning
+│   ├── mosquitto/                # MQTT broker configuration
+│   ├── influxdb/                 # bucket setup script
+│   ├── postgres/                 # initial schema migrations
+│   └── k8s/                      # deployment manifests (helm/kustomize) — next phase
 │
 └── scripts/
-    ├── seed_synthetic.py         # تولید و بارگذاری کل داده‌ی سنتتیک
-    ├── bootstrap.sh              # نصب وابستگی‌ها برای همه‌ی زیرپروژه‌ها
-    └── check_standards.py        # بررسی پوشش نگاشت نیازمندی↔کد
+    ├── seed_synthetic.py         # generate and load all synthetic data
+    ├── bootstrap.sh              # install dependencies for all sub-projects
+    └── check_standards.py        # check requirement↔code mapping coverage
 ```
 
-## نگاشت لایه‌های معماری (README §۲-۱) به کد
+## Mapping of architecture layers (README §2-1) to code
 
-| لایه README | سرویس/ماژول |
+| README layer | Service/module |
 |---|---|
-| لایه داده (Data Acquisition) | `services/data-acquisition`, `infra/mosquitto` |
-| لایه پردازش (Edge/Cloud) | `services/signal-processing`, `ml/features` |
-| لایه تحلیل (AI/ML Engine) | `services/ai-engine`, `services/prediction-rul`, `services/auto-operation`, `ml/models` |
-| لایه نمایش (Dashboard) | `apps/dashboard`, `services/api-gateway`, `infra/grafana` |
+| Data layer (Data Acquisition) | `services/data-acquisition`, `infra/mosquitto` |
+| Processing layer (Edge/Cloud) | `services/signal-processing`, `ml/features` |
+| Analysis layer (AI/ML Engine) | `services/ai-engine`, `services/prediction-rul`, `services/auto-operation`, `ml/models` |
+| Presentation layer (Dashboard) | `apps/dashboard`, `services/api-gateway`, `infra/grafana` |
 
-## نگاشت نیازمندی‌های عملکردی به سرویس
+## Mapping of functional requirements to services
 
-| کد FR | سرویس مسئول |
+| FR code | Responsible service |
 |---|---|
 | FR-01 … FR-05 | `data-acquisition` |
 | FR-06 … FR-10 | `signal-processing`, `ai-engine` |
@@ -109,26 +109,26 @@ inno-Abadan-Petrochemical-Smart-Dash/
 | FR-14 … FR-17 | `auto-operation` |
 | FR-18 … FR-21 | `api-gateway`, `alerting`, `reporting`, `apps/dashboard` |
 
-## پشته‌ی فناوری (README §۲-۲ نیازمندی‌های نرم‌افزاری)
+## Technology stack (README §2-2 software requirements)
 
-- **فرانت‌اند:** React.js + Vite + TypeScript، پنل‌های Grafana به‌صورت embed
-- **بک‌اند:** Python 3.11 + FastAPI، معماری microservices
-- **پایگاه داده:** InfluxDB (سری‌زمانی) + PostgreSQL (رابطه‌ای)
-- **پیام‌رسانی:** Kafka (باس داخلی) + MQTT (لبه)
+- **Frontend:** React.js + Vite + TypeScript, Grafana panels embedded
+- **Backend:** Python 3.11 + FastAPI, microservices architecture
+- **Database:** InfluxDB (time-series) + PostgreSQL (relational)
+- **Messaging:** Kafka (internal bus) + MQTT (edge)
 - **AI:** PyTorch / TensorFlow
-- **امنیت:** TLS 1.3، RBAC، 2FA، لاگ‌گذاری کامل (ISA/IEC 62443)
+- **Security:** TLS 1.3, RBAC, 2FA, full logging (ISA/IEC 62443)
 
-## راه‌اندازی سریع
+## Quick Start
 
 ```bash
 cp .env.example .env
-make up           # بالا آوردن زیرساخت + سرویس‌ها
-make seed         # تولید و بارگذاری داده‌ی سنتتیک (بخش ۱۰)
-make dashboard    # اجرای فرانت‌اند در حالت توسعه (http://localhost:5173)
+make up           # bring up infrastructure + services
+make seed         # generate and load synthetic data (section 10)
+make dashboard    # run the frontend in development mode (http://localhost:5173)
 ```
 
-## وضعیت پیاده‌سازی
+## Implementation status
 
-این مخزن در حال حاضر **اسکلت** است: ساختار پوشه‌ها، قراردادها، پیکربندی زیرساخت،
-و نقاط ورود سرویس‌ها با امضای توابع و TODO مشخص. منطق دامنه به‌تدریج در فازهای بعد
-تکمیل می‌شود. هر سرویس یک `README.md` با محدوده و «مراحل بعدی» دارد.
+This repository is currently a **skeleton**: the folder structure, contracts, infrastructure configuration,
+and service entry points with function signatures and TODOs. Domain logic is gradually
+completed in later phases. Each service has a `README.md` with its scope and "next steps".

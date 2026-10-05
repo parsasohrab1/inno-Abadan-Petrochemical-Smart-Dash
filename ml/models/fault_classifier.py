@@ -1,10 +1,10 @@
-"""طبقه‌بند عیب تجهیزات دوار (FR-08، FR-09).
+"""Rotating equipment fault classifier (FR-08, FR-09).
 
-پیاده‌سازی مرجع: Gradient Boosting روی بردار ویژگی مهندسی‌شده (ML واقعی، قابل آموزش).
-جایگزین یادگیری عمیق (CNN+LSTM روی طیف/سری‌زمانی خام) در `deep_fault_net.py` با
-همان رابط قرار می‌گیرد؛ برای استقرار پیش‌فرض که وابستگی torch اختیاری است از GBM
-استفاده می‌شود. اگر artifact موجود نباشد، `RuleBasedClassifier` به‌عنوان fallback
-از امضاهای فرکانسی `services.common.domain.faults` استفاده می‌کند.
+Reference implementation: Gradient Boosting on the engineered feature vector (real, trainable ML).
+A deep-learning alternative (CNN+LSTM on spectrum/raw time series) in `deep_fault_net.py` slots in with
+the same interface; for the default deployment where the torch dependency is optional, GBM is
+used. If the artifact is not available, `RuleBasedClassifier` uses as a fallback
+the frequency signatures of `services.common.domain.faults`.
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ MODEL_FILENAME = "fault_classifier.joblib"
 
 
 class FaultClassifier:
-    """پوشش مدل sklearn با پیش‌بینی احتمال کلاس + شدت."""
+    """sklearn model wrapper with class probability + severity prediction."""
 
     def __init__(self, estimator, classes: list[str], feature_order: list[str]) -> None:
         self.estimator = estimator
@@ -57,10 +57,10 @@ class FaultClassifier:
 
 
 class RuleBasedClassifier:
-    """fallback بدون آموزش — امتیازدهی هیوریستیک بر پایه‌ی امضاهای فرکانسی/پاکت.
+    """Training-free fallback — heuristic scoring based on frequency/envelope signatures.
 
-    فقط زمانی استفاده می‌شود که artifact مدل آموزش‌دیده موجود نباشد. دقت آن پایین‌تر
-    از مدل GBM است و برای رعایت NFR-08 باید `python -m ml.training.train_fault_model` اجرا شود.
+    Used only when the trained model artifact is unavailable. Its accuracy is lower
+    than the GBM model and to meet NFR-08 `python -m ml.training.train_fault_model` must be run.
     """
 
     feature_order = FEATURE_ORDER
@@ -103,6 +103,6 @@ def _severity_from_features(feats: dict[str, float], fault: FaultType) -> float:
     rms = feats.get("rms", 0.0)
     kurt = max(0.0, feats.get("kurtosis", 0.0))
     crest = feats.get("crest_factor", 1.4)
-    # نرمال‌سازی تجربی به بازه‌ی ۰..۱
+    # empirical normalization to the range 0..1
     sev = 0.5 * np.tanh(rms * 6) + 0.3 * np.tanh(kurt / 8) + 0.2 * np.tanh((crest - 1.4) / 3)
     return float(np.clip(sev, 0.0, 1.0))

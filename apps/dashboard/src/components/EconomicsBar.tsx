@@ -11,7 +11,7 @@ type Econ = {
   savings_mtd_usd: number;
 };
 
-/** نوار اقتصادی مدیریتی — سود و صرفه‌جویی لحظه‌ای به دلار (الزام کاربر). */
+/** Management economics bar — instantaneous profit and savings in dollars (user requirement). */
 export function EconomicsBar() {
   const [econ, setEcon] = useState<Econ | null>(null);
 
@@ -26,19 +26,19 @@ export function EconomicsBar() {
   return (
     <div className="econbar">
       <div className="econ-tile">
-        <div className="label">سود لحظه‌ای (نرخ)</div>
-        <div className="value pos">{usd(econ?.profit_rate_usd_per_hour)}<span className="muted" style={{ fontSize: 12 }}> / ساعت</span></div>
+        <div className="label">Instantaneous profit (rate)</div>
+        <div className="value pos">{usd(econ?.profit_rate_usd_per_hour)}<span className="muted" style={{ fontSize: 12 }}> / hour</span></div>
       </div>
       <div className="econ-tile">
-        <div className="label">سود امروز</div>
+        <div className="label">Profit today</div>
         <div className="value pos">{usd(econ?.profit_today_usd)}</div>
       </div>
       <div className="econ-tile">
-        <div className="label">صرفه‌جویی لحظه‌ای (نرخ)</div>
-        <div className="value pos">{usd(econ?.savings_rate_usd_per_hour)}<span className="muted" style={{ fontSize: 12 }}> / ساعت</span></div>
+        <div className="label">Instantaneous savings (rate)</div>
+        <div className="value pos">{usd(econ?.savings_rate_usd_per_hour)}<span className="muted" style={{ fontSize: 12 }}> / hour</span></div>
       </div>
       <div className="econ-tile">
-        <div className="label">صرفه‌جویی امروز · ماه</div>
+        <div className="label">Savings today · month</div>
         <div className="value pos">
           {usd(econ?.savings_today_usd)} <span className="muted" style={{ fontSize: 13 }}>· {usd(econ?.savings_mtd_usd)}</span>
         </div>

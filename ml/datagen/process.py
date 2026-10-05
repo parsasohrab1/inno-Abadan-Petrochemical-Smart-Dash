@@ -1,7 +1,7 @@
-"""داده‌ی فرآیندی سنتتیک (فشار/دما/دبی/سطح) — README §۱۰ (ردیف داده‌ی فرآیندی).
+"""Synthetic process data (pressure/temperature/flow/level) — README §10 (process data row).
 
-نرخ تولید خط با نویز آهسته + اثر افت ناشی از سلامت تجهیزات بحرانی مدل می‌شود؛
-این نرخ ورودی محاسبه‌ی «سود لحظه‌ای» در سرویس economics است.
+The line production rate is modeled with slow noise + a loss effect caused by the health of critical equipment;
+this rate is the input to the "instantaneous profit" calculation in the economics service.
 """
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ def line_flow_tph(
     availability: float = 1.0,
     rng: np.random.Generator | None = None,
 ) -> float:
-    """نرخ تولید لحظه‌ای خط. availability ∈ [0,1] از میانگین سلامت تجهیزات خط."""
+    """Instantaneous line production rate. availability ∈ [0,1] from the mean health of the line's equipment."""
     rng = rng or np.random.default_rng()
     if design_rate_tph <= 0:
         return 0.0

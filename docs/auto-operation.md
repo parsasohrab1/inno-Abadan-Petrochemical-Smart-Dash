@@ -1,74 +1,74 @@
-# طراحی اوپراتور هوشمند (Auto Operation)
+# Smart Operator (Auto Operation) design
 
-منبع: README §۶ و FR-14..17. الهام‌گرفته از Honeywell Experion Cognition و ABB Ability Genix
-(پیاده‌سازی Borouge).
+Source: README §6 and FR-14..17. Inspired by Honeywell Experion Cognition and ABB Ability Genix
+(Borouge implementation).
 
-## ۱. سطوح پنج‌گانه (README §۶-۲)
+## 1. The five levels (README §6-2)
 
-| سطح | نام | مؤلفه |
+| Level | Name | Component |
 |---|---|---|
-| ۱ پایش | مانیتورینگ ۲۴/۷ | `data-acquisition`, `sensor-health` |
-| ۲ تحلیل | تشخیص الگوی خرابی > ۹۵٪ | `signal-processing`, `ai-engine` |
-| ۳ هشدار | هشدار اولویت‌بندی‌شده | `prediction-rul`, `alerting` |
-| ۴ توصیه | پیشنهاد اقدام اصلاحی | `auto-operation/engine.py` (کاهش بار، زمان‌بندی تعمیر، سفارش قطعه) |
-| ۵ اقدام | اجرای خودکار | `auto-operation/control.py` (روشن/خاموش، تعویض زاپاس) |
+| 1 Monitoring | 24/7 monitoring | `data-acquisition`, `sensor-health` |
+| 2 Analysis | Failure pattern detection > 95% | `signal-processing`, `ai-engine` |
+| 3 Alerting | Prioritized alert | `prediction-rul`, `alerting` |
+| 4 Recommendation | Proposing corrective action | `auto-operation/engine.py` (load reduction, maintenance scheduling, part order) |
+| 5 Action | Automatic execution | `auto-operation/control.py` (on/off, standby switchover) |
 
-## ۲. بهینه‌سازی برخط و کنترل روشن/خاموش (الزام کاربر)
+## 2. Online optimization and on/off control (user requirement)
 
-سیستم قابلیت **خاموش‌کردن خودکار تجهیز (پمپ/کمپرسور/فن)** و **روشن‌کردن زاپاس** آن را دارد.
+The system can **automatically shut down equipment (pump/compressor/fan)** and **start its standby**.
 
-### درخت تصمیم برای هر تجهیز
-
-```
-شدت عیب < ۰٫۲۵  ────────────────► فقط پایش
-۰٫۲۵ ≤ شدت < ۰٫۵۵ و RUL > ۷۲h ──► سطح ۴: کاهش ۱۵٪ بار + زمان‌بندی تعمیر + سفارش قطعه
-شدت ≥ ۰٫۶  یا  RUL ≤ ۷۲h ───────► سطح ۵:
-        ├─ دارای زاپاس؟ ──► SPARE_CHANGEOVER: استارت زاپاس، سپس توقف اصلی، انتقال به تعمیر
-        ├─ ایمنی‌بحرانی و RUL ≤ ۲۴h و بدون زاپاس ──► EQUIPMENT_STOP (کنترل‌شده/اضطراری)
-        └─ در غیر این صورت ──► درخواست تعمیر با اولویت بالا + کاهش ۳۰٪ بار
-```
-
-### تحلیل هزینه-فایده‌ی لحظه‌ای
-
-اقدام تعویض/توقف تنها زمانی پیشنهاد می‌شود که:
+### Decision tree for each equipment
 
 ```
-صرفه‌جویی برآوردی = هزینه‌ی توقف اجتناب‌شده + هزینه‌ی خرابی فاجعه‌بار اجتناب‌شده
-                  (از services/common/economics.py با قیمت‌نامه‌ی config/economics.yaml)
+fault severity < 0.25  ────────────────► monitoring only
+0.25 ≤ severity < 0.55 and RUL > 72h ──► Level 4: 15% load reduction + maintenance scheduling + part order
+severity ≥ 0.6  or  RUL ≤ 72h ───────► Level 5:
+        ├─ has a standby? ──► SPARE_CHANGEOVER: start the standby, then stop the main, move to repair
+        ├─ safety-critical and RUL ≤ 24h and no standby ──► EQUIPMENT_STOP (controlled/emergency)
+        └─ otherwise ──► high-priority maintenance request + 30% load reduction
 ```
 
-مقدار `estimated_savings_usd` هر اقدام به سرویس `economics` تغذیه می‌شود و در نرخ
-«صرفه‌جویی لحظه‌ای» داشبورد مدیریتی ظاهر می‌شود.
+### Instantaneous cost-benefit analysis
 
-## ۳. ماشین حالت تجهیز (`control.py`)
+A changeover/stop action is proposed only when:
+
+```
+estimated savings = avoided downtime cost + avoided catastrophic failure cost
+                  (from services/common/economics.py with the price list config/economics.yaml)
+```
+
+The `estimated_savings_usd` value of each action is fed to the `economics` service and appears in the
+"instantaneous savings" rate of the management dashboard.
+
+## 3. Equipment state machine (`control.py`)
 
 ```
 RUNNING ──stop──► STOPPING ──► STOPPED ──start──► STARTING ──► RUNNING
    │                                    │
-   └──trip──► TRIPPED                    └──► STANDBY (زاپاس آماده)  /  MAINTENANCE
+   └──trip──► TRIPPED                    └──► STANDBY (standby ready)  /  MAINTENANCE
 ```
 
-هر انتقال در جدول `equipmentstatechange` با `triggered_by` (auto-operation / operator:<name> /
-protection) ثبت می‌شود. در محیط واقعی `_send_command` به OPC-UA writeback روی DCS/SIS متصل می‌شود.
+Each transition is recorded in the `equipmentstatechange` table with `triggered_by` (auto-operation / operator:<name> /
+protection). In a real environment `_send_command` connects to an OPC-UA writeback on the DCS/SIS.
 
-## ۴. Human-in-the-loop (FR-17)
+## 4. Human-in-the-loop (FR-17)
 
-| حالت (`AUTO_OP_MODE`) | رفتار |
+| Mode (`AUTO_OP_MODE`) | Behavior |
 |---|---|
-| `advisory` | همه‌ی اقدامات فقط «پیشنهاد» — هیچ اجرای خودکاری |
-| `supervised` | اقدامات روشن/خاموش/تعویض نیازمند تأیید اپراتور؛ بقیه خودکار |
-| `autonomous` | اجرای خودکار به‌جز تجهیزات ایمنی‌بحرانی (همیشه تأیید انسانی) |
+| `advisory` | All actions are only "suggestions" — no automatic execution |
+| `supervised` | On/off/changeover actions require operator approval; the rest are automatic |
+| `autonomous` | Automatic execution except for safety-critical equipment (always human approval) |
 
-`AUTO_OP_REQUIRE_HUMAN_APPROVAL=true` (پیش‌فرض) به‌صورت سراسری تأیید انسانی را برای
-اقدامات کنترلی الزامی می‌کند. سقف `AUTO_OP_MAX_AUTONOMOUS_ACTIONS_PER_HOUR` از طوفان
-اقدام جلوگیری می‌کند.
+`AUTO_OP_REQUIRE_HUMAN_APPROVAL=true` (default) makes human approval globally mandatory for
+control actions. The cap `AUTO_OP_MAX_AUTONOMOUS_ACTIONS_PER_HOUR` prevents an action
+storm.
 
-## ۵. API
+## 5. API
 
-| متد | مسیر | نقش لازم |
+| Method | Path | Required role |
 |---|---|---|
 | GET | `/actions`, `/actions/pending`, `/actions/{id}` | viewer |
 | POST | `/actions/{id}/approve` \| `/reject` | operator |
 | POST | `/control/{tag}/start` \| `/stop` \| `/changeover` | operator |
 | GET | `/equipment/{tag}/state` | viewer |
-| GET/PATCH | `/policy` | engineer (برای PATCH) |
+| GET/PATCH | `/policy` | engineer (for PATCH) |

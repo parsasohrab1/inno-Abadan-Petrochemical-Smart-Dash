@@ -1,8 +1,8 @@
-"""تولید و بارگذاری داده‌ی سنتتیک اولیه — README §۱۰.
+"""Generate and load the initial synthetic data — README §10.
 
-- ساخت سلسله‌مراتب دارایی + نگاشت سنسور/دوربین (services.asset_registry.seed)
-- تولید تاریخچه‌ی اولیه‌ی تشخیص/RUL/سلامت سنسور برای پرکردن داشبرد پیش از استریم زنده
-اجرا: python scripts/seed_synthetic.py
+- Build the asset hierarchy + sensor/camera mapping (services.asset_registry.seed)
+- Generate initial diagnosis/RUL/sensor-health history to populate the dashboard before the live stream
+Run: python scripts/seed_synthetic.py
 """
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def main() -> None:
 
     now = datetime.now(timezone.utc)
 
-    # --- تاریخچه‌ی تشخیص و RUL برای ۳۰ روز گذشته (روزی یک نقطه) ---
+    # --- diagnosis and RUL history for the past 30 days (one point per day) ---
     with session_scope() as s:
         for eq in equipment:
             faulty = PYRNG.random() < 0.22
@@ -80,7 +80,7 @@ def main() -> None:
                                   predicted_rul_hours=round(rul_hours, 1), confidence=round(conf, 3),
                                   predicted_failure_at=ts + timedelta(hours=rul_hours),
                                   health_score=score))
-            # وضعیت جاری تجهیز
+            # current equipment state
             eq_row = s.exec(select(Equipment).where(Equipment.id == eq.id)).first()
             last_sev = degrade_severity(max(0.0, (30 - onset_day) * 24), ttf) if faulty else 0.0
             rul_now = max(150.0, (1 - last_sev) ** 2 * 40000)
@@ -89,7 +89,7 @@ def main() -> None:
             s.add(eq_row)
     log.info("seed.history.diagnosis_rul.done", equipment=len(equipment))
 
-    # --- زنجیره‌ی سلامت سنسور ۳۰ روزه ---
+    # --- 30-day sensor health chain ---
     with session_scope() as s:
         for sensor in sensors:
             status = HealthColor(PYRNG.choices(
@@ -104,7 +104,7 @@ def main() -> None:
                     supply_voltage=round(m.supply_voltage, 2), loop_current_ma=round(m.loop_current_ma, 2),
                     snr_db=round(m.snr_db, 1), calibration_drift_pct=round(m.calibration_drift_pct, 2),
                     comm_latency_ms=round(m.comm_latency_ms, 1), device_temp_c=round(m.device_temp_c, 1),
-                    reasons="؛ ".join(res.reasons),
+                    reasons="; ".join(res.reasons),
                 ))
             sensor_row = s.exec(select(Sensor).where(Sensor.id == sensor.id)).first()
             sensor_row.health_status = res.status

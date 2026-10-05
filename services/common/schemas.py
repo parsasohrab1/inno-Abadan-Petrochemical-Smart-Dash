@@ -1,4 +1,4 @@
-"""قرارداد رویدادهای باس (Kafka/MQTT) — JSON. با `packages/contracts/schemas` هم‌راستا."""
+"""Event bus contract (Kafka/MQTT) — JSON. Aligned with `packages/contracts/schemas`."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -14,13 +14,13 @@ class TelemetryReading(BaseModel):
     kind: str
     ts: datetime
     value: float
-    unit: str                       # همیشه همراه مقدار (الزام کاربر)
+    unit: str                       # always accompanies the value (user requirement)
     quality: SignalQuality = SignalQuality.GOOD
     sensor_health: HealthColor = HealthColor.GREEN
 
 
 class WaveformFrame(BaseModel):
-    """قاب سیگنال خام ارتعاش/صوت برای پردازش FFT."""
+    """Raw vibration/acoustic signal frame for FFT processing."""
 
     sensor_tag: str
     equipment_tag: str
@@ -38,7 +38,7 @@ class FeatureVector(BaseModel):
     ts: datetime
     rpm: float | None = None
     features: dict[str, float]       # rms, peak, crest_factor, kurtosis, band energies, ...
-    spectrum_orders: dict[str, float] | None = None  # دامنه در مضارب 0.5X..10X
+    spectrum_orders: dict[str, float] | None = None  # amplitude at multiples 0.5X..10X
 
 
 class DiagnosisEvent(BaseModel):

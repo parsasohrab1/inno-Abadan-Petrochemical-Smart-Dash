@@ -1,7 +1,7 @@
-"""مصرف قاب‌های ارتعاش → پاک‌سازی → استخراج ویژگی → انتشار روی analytics.features.
+"""Consume vibration frames → cleaning → feature extraction → publish on analytics.features.
 
-خروجی ISO 13374 (Data Manipulation + State Detection پایه). ویژگی‌های کلیدی در
-InfluxDB برای روندنمایی ۷/۳۰/۹۰ روزه (FR-13) ذخیره می‌شوند.
+ISO 13374 output (Data Manipulation + basic State Detection). Key features are stored in
+InfluxDB for 7/30/90-day trending (FR-13).
 """
 from __future__ import annotations
 

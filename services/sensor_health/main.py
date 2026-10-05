@@ -1,6 +1,6 @@
-"""مصرف telemetry.device_health → ثبت اسنپ‌شات + به‌روزرسانی وضعیت رنگی سنسور/دوربین.
+"""Consume telemetry.device_health → record a snapshot + update the sensor/camera color state.
 
-بر رفتن به قرمز، هشدار صادر می‌شود (کاهش قابلیت اطمینان داده — README §۸-۲).
+When going red, an alert is issued (reduced data reliability — README §8-2).
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ async def _handle(topic: str, msg: dict) -> None:
             supply_voltage=m.get("supply_voltage"), loop_current_ma=m.get("loop_current_ma"),
             snr_db=m.get("snr_db"), calibration_drift_pct=m.get("calibration_drift_pct"),
             comm_latency_ms=m.get("comm_latency_ms"), device_temp_c=m.get("device_temp_c"),
-            reasons="؛ ".join(msg.get("reasons", [])),
+            reasons="; ".join(msg.get("reasons", [])),
         ))
         if dtype == "camera":
             dev = s.exec(select(Camera).where(Camera.tag == tag)).first()
@@ -58,12 +58,12 @@ async def _handle(topic: str, msg: dict) -> None:
             _settings.kafka_topic_alerts,
             {
                 "code": "SENSOR_FAULT",
-                "title": f"خرابی {'دوربین' if dtype == 'camera' else 'سنسور'} {tag}",
+                "title": f"{'Camera' if dtype == 'camera' else 'Sensor'} {tag} failure",
                 "severity": "major",
                 "device_tag": tag,
                 "ts": now.isoformat(),
                 "is_predictive": False,
-                "description": "؛ ".join(msg.get("reasons", [])) or "داده‌ی نامعتبر",
+                "description": "; ".join(msg.get("reasons", [])) or "Invalid data",
             },
             key=tag,
         )

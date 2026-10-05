@@ -3,9 +3,9 @@ import { ReactNode } from "react";
 export type Color = "green" | "yellow" | "red";
 
 export const FA_COLOR: Record<Color, string> = {
-  green: "سالم",
-  yellow: "هشدار",
-  red: "خطا",
+  green: "Healthy",
+  yellow: "Warning",
+  red: "Fault",
 };
 
 export function HealthDot({ color, label }: { color: Color; label?: boolean }) {
@@ -36,7 +36,7 @@ export function usd(n: number | undefined | null): string {
   return "$" + Math.round(n).toLocaleString("en-US");
 }
 
-/** واحد اندازه‌گیری همیشه کنار مقدار (الزام کاربر). */
+/** The unit of measure is always shown next to the value (user requirement). */
 export function Measure({ value, unit }: { value: number | string; unit: string }) {
   return (
     <span>

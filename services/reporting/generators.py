@@ -1,4 +1,4 @@
-"""منطق ساخت گزارش‌ها از داده‌ی پایگاه و سرویس‌های دیگر."""
+"""Logic for building reports from the database and other services."""
 from __future__ import annotations
 
 import json
@@ -40,7 +40,7 @@ def generate(kind: str) -> Report:
         elif kind == "ai_performance":
             payload, summary, title = _ai_performance(s, start, end)
         else:
-            raise ValueError(f"نوع گزارش ناشناخته: {kind}")
+            raise ValueError(f"Unknown report type: {kind}")
 
         report = Report(
             kind=kind, period_start=start, period_end=end, title=title,
@@ -91,14 +91,14 @@ def _operational(s, kind: str, start: datetime, end: datetime):
         ],
         "recommendations": _recommendations(worst),
     }
-    label = {"daily": "روزانه", "weekly": "هفتگی", "monthly": "ماهانه"}[kind]
+    label = {"daily": "Daily", "weekly": "Weekly", "monthly": "Monthly"}[kind]
     summary = (
-        f"گزارش {label}: {by_color.get('red', 0)} تجهیز قرمز، "
-        f"{payload['alerts']['total']} هشدار، "
-        f"{payload['auto_operation']['executed']} اقدام خودکار اجراشده، "
-        f"صرفه‌جویی برآوردی ${payload['auto_operation']['estimated_savings_usd']:,.0f}"
+        f"{label} report: {by_color.get('red', 0)} red equipment, "
+        f"{payload['alerts']['total']} alerts, "
+        f"{payload['auto_operation']['executed']} automatic actions executed, "
+        f"estimated savings ${payload['auto_operation']['estimated_savings_usd']:,.0f}"
     )
-    return payload, summary, f"گزارش {label} وضعیت CBM"
+    return payload, summary, f"{label} CBM status report"
 
 
 def _cost_benefit(s, start: datetime, end: datetime):
@@ -118,7 +118,7 @@ def _cost_benefit(s, start: datetime, end: datetime):
         sum(x.profit_rate_usd_per_hour for x in snaps) / len(snaps), 2
     ) if snaps else 0.0
 
-    # فرض هزینه‌ی سرمایه‌ای و عملیاتی سالانه‌ی سیستم CBM
+    # assumption of the capital and annual operating cost of the CBM system
     annual_capex_amortized = 1_800_000.0
     annual_opex = 600_000.0
     period_cost = (annual_capex_amortized + annual_opex) * ((end - start).days / 365.0)
@@ -135,10 +135,10 @@ def _cost_benefit(s, start: datetime, end: datetime):
         "actions_by_type": _count_by(actions, "action_type"),
     }
     summary = (
-        f"صرفه‌جویی دوره ${total_savings:,.0f} در برابر هزینه‌ی سیستم "
+        f"Period savings ${total_savings:,.0f} versus the system cost "
         f"${period_cost:,.0f} — ROI ≈ {roi}%"
     )
-    return payload, summary, "گزارش هزینه-فایده‌ی سیستم CBM"
+    return payload, summary, "CBM system cost-benefit report"
 
 
 def _ai_performance(s, start: datetime, end: datetime):
@@ -165,17 +165,17 @@ def _ai_performance(s, start: datetime, end: datetime):
         },
     }
     summary = (
-        f"میانگین اعتماد تشخیص {avg_conf:.0%}، {len(predictive_alerts)} هشدار پیش‌بینی، "
-        f"نرخ هشدار اشتباه {payload['false_alarm_rate_pct']}% (هدف < ۵٪)"
+        f"Mean diagnosis confidence {avg_conf:.0%}, {len(predictive_alerts)} predictive alerts, "
+        f"false alarm rate {payload['false_alarm_rate_pct']}% (target < 5%)"
     )
-    return payload, summary, "گزارش عملکرد هوش مصنوعی"
+    return payload, summary, "AI performance report"
 
 
 def _false_alarm_rate(s, start: datetime) -> float:
     alerts = s.exec(select(Alert).where(Alert.created_at >= start, Alert.is_predictive.is_(True))).all()
     if not alerts:
         return 0.0
-    # هشدارهایی که resolve شدند بدون هیچ MaintenanceRecord متناظر ⇒ کاندیدای هشدار اشتباه
+    # alerts that were resolved without any corresponding MaintenanceRecord ⇒ false-alarm candidates
     false_like = sum(1 for a in alerts if a.resolved_at and not a.acknowledged_by)
     return round(false_like / len(alerts) * 100, 1)
 
@@ -184,9 +184,9 @@ def _recommendations(worst: list[Equipment]) -> list[str]:
     out = []
     for e in worst:
         if e.health_score < 45:
-            out.append(f"{e.tag}: برنامه‌ریزی فوری تعمیر/تعویض (شاخص {e.health_score})")
+            out.append(f"{e.tag}: urgent repair/replacement planning (index {e.health_score})")
         elif e.health_score < 75:
-            out.append(f"{e.tag}: افزایش تواتر پایش و بازرسی (شاخص {e.health_score})")
+            out.append(f"{e.tag}: increase monitoring and inspection frequency (index {e.health_score})")
     return out
 
 

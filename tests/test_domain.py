@@ -1,4 +1,4 @@
-"""تست‌های واحد منطق دامنه — بدون نیاز به پایگاه‌داده یا Kafka."""
+"""Unit tests of the domain logic — no database or Kafka needed."""
 from __future__ import annotations
 
 import numpy as np

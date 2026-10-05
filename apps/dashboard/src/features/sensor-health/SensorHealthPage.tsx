@@ -16,24 +16,24 @@ export function SensorHealthPage() {
   return (
     <div className="grid" style={{ gap: 14 }}>
       <div className="grid cols-3">
-        <StatCard title="سنسورهای سالم" value={<span><HealthDot color="green" /> {s?.green ?? "…"}</span>} />
-        <StatCard title="نیازمند بررسی/کالیبراسیون" value={<span><HealthDot color="yellow" /> {s?.yellow ?? "…"}</span>} />
-        <StatCard title="خراب / داده‌ی نامعتبر" value={<span><HealthDot color="red" /> {s?.red ?? "…"}</span>} />
+        <StatCard title="Healthy sensors" value={<span><HealthDot color="green" /> {s?.green ?? "…"}</span>} />
+        <StatCard title="Needs check/calibration" value={<span><HealthDot color="yellow" /> {s?.yellow ?? "…"}</span>} />
+        <StatCard title="Faulty / invalid data" value={<span><HealthDot color="red" /> {s?.red ?? "…"}</span>} />
       </div>
 
       <div className="card">
         <div className="row" style={{ marginBottom: 10 }}>
-          <h3 style={{ margin: 0 }}>پایش سه‌چراغِ سنسورها و دوربین‌ها</h3>
+          <h3 style={{ margin: 0 }}>Three-light monitoring of sensors and cameras</h3>
           <select value={color} onChange={(e) => setColor(e.target.value)}>
-            <option value="">همه</option>
-            <option value="green">سبز</option>
-            <option value="yellow">زرد</option>
-            <option value="red">قرمز</option>
+            <option value="">All</option>
+            <option value="green">Green</option>
+            <option value="yellow">Yellow</option>
+            <option value="red">Red</option>
           </select>
         </div>
         <table>
           <thead>
-            <tr><th>تگ</th><th>نوع</th><th>واحد اندازه‌گیری</th><th>محدوده</th><th>وضعیت</th></tr>
+            <tr><th>Tag</th><th>Type</th><th>Unit of measure</th><th>Range</th><th>Status</th></tr>
           </thead>
           <tbody>
             {(data?.sensors ?? []).slice(0, 400).map((x: any) => (
@@ -50,10 +50,10 @@ export function SensorHealthPage() {
       </div>
 
       <div className="card">
-        <h3>دوربین‌ها ({data?.cameras?.length ?? 0})</h3>
+        <h3>Cameras ({data?.cameras?.length ?? 0})</h3>
         <table>
           <thead>
-            <tr><th>تگ</th><th>نوع</th><th>واحد اندازه‌گیری</th><th>وضعیت</th></tr>
+            <tr><th>Tag</th><th>Type</th><th>Unit of measure</th><th>Status</th></tr>
           </thead>
           <tbody>
             {(data?.cameras ?? []).map((c: any) => (

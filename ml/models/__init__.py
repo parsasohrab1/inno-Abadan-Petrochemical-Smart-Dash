@@ -1,1 +1,1 @@
-"""معماری و بارگذاری مدل‌های تشخیص عیب و تخمین RUL."""
+"""Architecture and loading of the fault detection and RUL estimation models."""

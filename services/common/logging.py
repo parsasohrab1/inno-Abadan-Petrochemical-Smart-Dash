@@ -1,4 +1,4 @@
-"""لاگ‌گذاری ساخت‌یافته (NFR-13: ثبت کامل فعالیت‌ها)."""
+"""Structured logging (NFR-13: full activity logging)."""
 from __future__ import annotations
 
 import logging

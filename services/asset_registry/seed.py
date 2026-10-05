@@ -1,11 +1,11 @@
-"""ساخت سلسله‌مراتب دارایی پتروشیمی آبادان و نگاشت کامل سنسور/دوربین.
+"""Build the Abadan Petrochemical asset hierarchy and the complete sensor/camera mapping.
 
-طبق README §۱-۳ و §۸-۱ و الزام کاربر:
-«تمامی تجهیزات و خط تولید زیر سنسور و دوربین مرتبط باشند».
+Per README §1-3 and §8-1 and the user requirement:
+"all equipment and production lines must be covered by related sensors and cameras".
 
-هر تجهیز دوار: شتاب‌سنج سه‌محوره روی یاتاقان DE و NDE + velometer + (برای کمپرسور/توربین)
-proximity probe + سنسورهای فرآیندی (فشار/دما/دبی) + پوشش دوربین حرارتی و CCTV.
-هر خط تولید: فلومتر خوراک/محصول + دوربین حرارتی + دوربین AI-CCTV + گازسنج واحد.
+Each rotating equipment: triaxial accelerometer on the DE and NDE bearing + velometer + (for compressor/turbine)
+proximity probe + process sensors (pressure/temperature/flow) + thermal camera and CCTV coverage.
+Each production line: feed/product flow meter + thermal camera + AI-CCTV camera + unit gas detector.
 """
 from __future__ import annotations
 
@@ -34,46 +34,46 @@ from services.common.domain.models import (
     Unit,
 )
 
-RNG = random.Random(1346)  # سال تأسیس مجتمع — تکرارپذیری
+RNG = random.Random(1346)  # founding year of the complex (SH) — reproducibility
 
-# (کد واحد، عنوان، [(کد خط, عنوان, محصول, ظرفیت t/h)])
+# (unit code, title, [(line code, title, product, capacity t/h)])
 PLANT_LAYOUT: list[tuple[str, str, list[tuple[str, str, str, float]]]] = [
-    ("200-300", "واحد ۲۰۰/۳۰۰ — کلر-آلکالی و EDC", [
-        ("CA-EL", "سلول‌های الکترولیز کلر-آلکالی", "Caustic", 3.8),
-        ("EDC-01", "تولید EDC", "EDC", 4.5),
+    ("200-300", "Unit 200/300 — Chlor-alkali and EDC", [
+        ("CA-EL", "Chlor-alkali electrolysis cells", "Caustic", 3.8),
+        ("EDC-01", "EDC production", "EDC", 4.5),
     ]),
-    ("400-500", "واحد ۴۰۰/۵۰۰ — VCM", [
-        ("VCM-01", "کراکینگ EDC به VCM", "VCM", 3.2),
-        ("VCM-REC", "بازیافت HCl و VCM", "VCM", 1.1),
+    ("400-500", "Unit 400/500 — VCM", [
+        ("VCM-01", "EDC cracking to VCM", "VCM", 3.2),
+        ("VCM-REC", "HCl and VCM recovery", "VCM", 1.1),
     ]),
-    ("600-700", "واحد ۶۰۰/۷۰۰ — پلیمریزاسیون PVC", [
-        ("PVC-A", "خط پلیمریزاسیون PVC A", "PVC", 3.5),
-        ("PVC-B", "خط پلیمریزاسیون PVC B", "PVC", 3.5),
+    ("600-700", "Unit 600/700 — PVC polymerization", [
+        ("PVC-A", "PVC polymerization line A", "PVC", 3.5),
+        ("PVC-B", "PVC polymerization line B", "PVC", 3.5),
     ]),
-    ("800-900", "واحد ۸۰۰/۹۰۰ — خشک‌کن و بسته‌بندی PVC", [
-        ("PVC-DRY", "خشک‌کن بستر سیال PVC", "PVC", 7.0),
+    ("800-900", "Unit 800/900 — PVC drying and packaging", [
+        ("PVC-DRY", "PVC fluidized-bed dryer", "PVC", 7.0),
     ]),
-    ("1000", "واحد ۱۰۰۰ — سرویس‌های جانبی (Utilities)", [
-        ("UTIL-AIR", "هوای فشرده و ابزار دقیق", "", 0.0),
-        ("UTIL-CW", "آب خنک‌کننده", "", 0.0),
-        ("UTIL-STM", "بویلر و بخار", "", 0.0),
+    ("1000", "Unit 1000 — Utilities", [
+        ("UTIL-AIR", "Compressed air and instrument air", "", 0.0),
+        ("UTIL-CW", "Cooling water", "", 0.0),
+        ("UTIL-STM", "Boiler and steam", "", 0.0),
     ]),
-    ("PVC-NEW", "واحد جدید تولید PVC", [
-        ("PVC-N1", "راکتور جدید PVC", "PVC", 6.2),
+    ("PVC-NEW", "New PVC production unit", [
+        ("PVC-N1", "New PVC reactor", "PVC", 6.2),
     ]),
-    ("TETRAMER", "واحد تترامر", [
-        ("TET-01", "پلیمریزاسیون تترامر پروپیلن", "Tetramer", 1.3),
+    ("TETRAMER", "Tetramer unit", [
+        ("TET-01", "Propylene tetramer polymerization", "Tetramer", 1.3),
     ]),
-    ("DDB-NEW", "واحد دودسیل‌بنزن", [
-        ("DDB-01", "آلکیلاسیون بنزن", "DDB", 1.2),
+    ("DDB-NEW", "Dodecylbenzene unit", [
+        ("DDB-01", "Benzene alkylation", "DDB", 1.2),
     ]),
-    ("TANKFARM", "مخازن ذخیره و خطوط لوله", [
-        ("TF-EDC", "مخازن EDC/VCM", "", 0.0),
-        ("TF-PROD", "مخازن محصول و بارگیری", "", 0.0),
+    ("TANKFARM", "Storage tanks and pipelines", [
+        ("TF-EDC", "EDC/VCM tanks", "", 0.0),
+        ("TF-PROD", "Product tanks and loading", "", 0.0),
     ]),
 ]
 
-# انواع تجهیز به‌ازای هر خط (نمونه‌ی معرف)
+# equipment types per line (representative sample)
 LINE_EQUIPMENT_TEMPLATE: list[tuple[str, EquipmentType, Criticality, bool]] = [
     ("Feed Pump", EquipmentType.PUMP, Criticality.HIGH, True),
     ("Transfer Pump", EquipmentType.PUMP, Criticality.MEDIUM, True),
@@ -133,7 +133,7 @@ def build(session: Session) -> dict[str, int]:
         session.add(unit)
         session.flush()
 
-        # گازسنج‌های واحد (README §۳-۴)
+        # unit gas detectors (README §3-4)
         for g in range(RNG.randint(3, 6)):
             gs = _mk_sensor(f"GD-{u_code}-{g:02d}", SensorKind.GAS_DETECTOR, 0, 100, 1.0, "OPC-UA")
             session.add(gs)
@@ -149,7 +149,7 @@ def build(session: Session) -> dict[str, int]:
             session.add(line)
             session.flush()
 
-            # ---- دوربین‌ها و فلومتر سطح خط (الزام: هر خط زیر دوربین/سنسور) ----
+            # ---- cameras and line-level flow meter (requirement: every line under camera/sensor) ----
             for cam_kind, purpose in [
                 (CameraKind.THERMAL, "thermal"),
                 (CameraKind.AI_CCTV, "flame,smoke,leak,intrusion"),
@@ -180,11 +180,11 @@ def build(session: Session) -> dict[str, int]:
                     ))
                     n_sensor += 1
 
-            # ---- تجهیزات خط ----
+            # ---- line equipment ----
             spares: list[Equipment] = []
             for i, (name, etype, crit, has_spare) in enumerate(LINE_EQUIPMENT_TEMPLATE, start=1):
                 if RNG.random() < 0.25 and etype in {EquipmentType.TURBINE}:
-                    continue  # همه‌ی خطوط توربین ندارند
+                    continue  # not all lines have turbines
                 rpm = {
                     EquipmentType.PUMP: RNG.choice([1480, 2960, 3560]),
                     EquipmentType.COMPRESSOR: RNG.choice([6300, 8200, 11000]),
@@ -209,7 +209,7 @@ def build(session: Session) -> dict[str, int]:
                 session.flush()
                 n_eq += 1
 
-                # اجزا: یاتاقان DE/NDE + شفت + محرک
+                # components: DE/NDE bearing + shaft + driver
                 comp_ids: dict[str, int] = {}
                 for ctype, pos in [("bearing", "DE"), ("bearing", "NDE"), ("shaft", None), ("motor", None)]:
                     c = Component(equipment_id=eq.id, ctype=ctype, position=pos)
@@ -217,7 +217,7 @@ def build(session: Session) -> dict[str, int]:
                     session.flush()
                     comp_ids[f"{ctype}-{pos}"] = c.id
 
-                # شتاب‌سنج سه‌محوره روی هر یاتاقان
+                # triaxial accelerometer on each bearing
                 for pos in ("DE", "NDE"):
                     for axis in ("X", "Y", "Z"):
                         s = _mk_sensor(
@@ -232,14 +232,14 @@ def build(session: Session) -> dict[str, int]:
                             measured_quantity="vibration_acceleration",
                         ))
                         n_sensor += 1
-                # velometer بدنه
+                # body velometer
                 v = _mk_sensor(f"{eq.tag}-VEL", SensorKind.VELOMETER, 0, 100, 1000.0)
                 session.add(v)
                 session.flush()
                 session.add(SensorMount(sensor_id=v.id, equipment_id=eq.id, measured_quantity="vibration_velocity"))
                 n_sensor += 1
 
-                # proximity probe برای کمپرسور/توربین
+                # proximity probe for compressor/turbine
                 if etype in {EquipmentType.COMPRESSOR, EquipmentType.TURBINE}:
                     for axis in ("X", "Y"):
                         pp = _mk_sensor(f"{eq.tag}-PRX-{axis}", SensorKind.PROXIMITY_PROBE, 0, 2000, 10000.0)
@@ -251,7 +251,7 @@ def build(session: Session) -> dict[str, int]:
                         ))
                         n_sensor += 1
 
-                # سنسورهای فرآیندی روی تجهیز
+                # process sensors on the equipment
                 for kind, rng, mq in [
                     (SensorKind.PRESSURE, (0, 40), "discharge_pressure"),
                     (SensorKind.PRESSURE, (0, 10), "suction_pressure"),
@@ -264,14 +264,14 @@ def build(session: Session) -> dict[str, int]:
                     session.add(SensorMount(sensor_id=ps.id, equipment_id=eq.id, measured_quantity=mq))
                     n_sensor += 1
 
-                # ultrasonic mic نزدیک یاتاقان/شیر
+                # ultrasonic mic near the bearing/valve
                 um = _mk_sensor(f"{eq.tag}-US", SensorKind.ULTRASONIC_MIC, 0, 120, 44100.0)
                 session.add(um)
                 session.flush()
                 session.add(SensorMount(sensor_id=um.id, equipment_id=eq.id, measured_quantity="ultrasonic_level"))
                 n_sensor += 1
 
-                # پوشش دوربین حرارتی اختصاصی برای تجهیزات بحرانی
+                # dedicated thermal camera coverage for critical equipment
                 if crit in {Criticality.HIGH, Criticality.SAFETY_CRITICAL}:
                     tcam = Camera(
                         tag=f"CAM-{eq.tag}-TH", kind=CameraKind.THERMAL,
@@ -288,7 +288,7 @@ def build(session: Session) -> dict[str, int]:
                 if has_spare:
                     spares.append(eq)
 
-            # ثبت رابطه‌ی زاپاس: زوج‌های هم‌نوع، یکی standby
+            # record the spare relationship: same-type pairs, one standby
             by_type: dict[EquipmentType, list[Equipment]] = {}
             for eq in session.exec(select(Equipment).where(Equipment.line_id == line.id)).all():
                 by_type.setdefault(eq.etype, []).append(eq)
@@ -301,7 +301,7 @@ def build(session: Session) -> dict[str, int]:
                     session.add(spare_eq)
                     session.add(main_eq)
 
-    # گازسنج‌های سطح مجتمع (hyperspectral) روی واحدهای کلیدی
+    # complex-level gas detectors (hyperspectral) on key units
     for u in session.exec(select(Unit)).all():
         if u.code in {"400-500", "600-700", "PVC-NEW", "TANKFARM", "200-300"}:
             hc = Camera(tag=f"CAM-{u.code}-HS", kind=CameraKind.HYPERSPECTRAL,

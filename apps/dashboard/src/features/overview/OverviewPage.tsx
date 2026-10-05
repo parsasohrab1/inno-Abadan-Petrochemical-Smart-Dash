@@ -20,7 +20,7 @@ export function OverviewPage() {
     <div className="grid" style={{ gap: 18 }}>
       <div className="grid cols-4">
         <StatCard
-          title="تجهیزات"
+          title="Equipment"
           value={o?.equipment.total ?? "…"}
           sub={
             o && (
@@ -33,12 +33,12 @@ export function OverviewPage() {
           }
         />
         <StatCard
-          title="وضعیت کارکرد"
-          value={o ? `${o.equipment.running} در حال کار` : "…"}
-          sub={o && `${o.equipment.standby} زاپاس · ${o.equipment.stopped} متوقف`}
+          title="Run state"
+          value={o ? `${o.equipment.running} running` : "…"}
+          sub={o && `${o.equipment.standby} standby · ${o.equipment.stopped} stopped`}
         />
         <StatCard
-          title="سنسورها"
+          title="Sensors"
           value={o?.sensors.total ?? "…"}
           sub={
             o && (
@@ -51,21 +51,21 @@ export function OverviewPage() {
           }
         />
         <StatCard
-          title="هشدارهای فعال"
+          title="Active alerts"
           value={o?.alerts.active ?? "…"}
-          sub={o && `${o.alerts.critical} بحرانی · ${o.alerts.predictive} پیش‌بینی`}
+          sub={o && `${o.alerts.critical} critical · ${o.alerts.predictive} predictive`}
         />
       </div>
 
       <div className="card">
-        <h3>نقشه‌ی حرارتی وضعیت تجهیزات مجتمع (کلیک برای جزئیات)</h3>
-        {(heat.data ?? []).length === 0 && <div className="muted">در حال بارگذاری…</div>}
+        <h3>Heat map of the complex equipment status (click for details)</h3>
+        {(heat.data ?? []).length === 0 && <div className="muted">Loading…</div>}
         <div className="heatmap">
           {(heat.data ?? []).map((e: any) => (
             <div
               key={e.tag}
               className={`heat-cell ${e.color} ${e.has_spare ? "spare" : ""}`}
-              title={`${e.name} — ${e.unit}/${e.line} — شاخص سلامت ${e.health_score} — ${e.run_state}`}
+              title={`${e.name} — ${e.unit}/${e.line} — health index ${e.health_score} — ${e.run_state}`}
               onClick={() => nav(`/equipment/${e.tag}`)}
             >
               <b>{e.tag.split("-").slice(-2).join("-")}</b>
@@ -76,10 +76,10 @@ export function OverviewPage() {
       </div>
 
       <div className="card">
-        <h3>واحدهای تولیدی</h3>
+        <h3>Production units</h3>
         <table>
           <thead>
-            <tr><th>کد واحد</th><th>عنوان</th><th>بحرانیت</th></tr>
+            <tr><th>Unit code</th><th>Title</th><th>Criticality</th></tr>
           </thead>
           <tbody>
             {(o?.units ?? []).map((u: any) => (

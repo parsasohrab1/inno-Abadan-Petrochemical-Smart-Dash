@@ -1,6 +1,6 @@
-"""تخمین‌گر RUL (FR-11) — رگرسیون Gradient Boosting روی شاخص‌های روند عیب.
+"""RUL estimator (FR-11) — Gradient Boosting regression on fault trend indicators.
 
-ورودی: [severity, trend_slope, age_fraction, life_scale]  → خروجی: RUL بر حسب ساعت.
+Input: [severity, trend_slope, age_fraction, life_scale]  → output: RUL in hours.
 """
 from __future__ import annotations
 
@@ -33,12 +33,12 @@ class RulEstimator:
 
     def predict(self, severity: float, trend_slope: float, age_fraction: float, life_scale: float = 0.5) -> tuple[float, float]:
         if self.estimator is None:
-            # fallback تحلیلی
+            # analytical fallback
             base = 45000.0 * life_scale
             rem = base * max(0.02, (1 - severity) ** 2) * max(0.05, 1 - 8 * max(trend_slope, 0))
             return float(rem), 0.5
         x = np.array([[severity, trend_slope, age_fraction, life_scale]], dtype=np.float32)
         pred = float(self.estimator.predict(x)[0])
-        # اعتماد بر اساس فاصله از مرزهای آموزش
+        # confidence based on distance from the training boundaries
         conf = float(np.clip(1.0 - 0.4 * severity - 0.3 * abs(trend_slope) * 5, 0.3, 0.97))
         return max(0.0, pred), conf

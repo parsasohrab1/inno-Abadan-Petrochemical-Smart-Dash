@@ -1,1 +1,1 @@
-"""مدل دامنه‌ی مشترک CBM."""
+"""Shared CBM domain model."""

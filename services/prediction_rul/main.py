@@ -1,4 +1,4 @@
-"""مصرف analytics.diagnosis → روند شدت → RUL → به‌روزرسانی شاخص سلامت + هشدار پیش‌بینی."""
+"""Consume analytics.diagnosis → severity trend → RUL → update health index + predictive alert."""
 from __future__ import annotations
 
 import asyncio
@@ -32,7 +32,7 @@ def _trend_slope(points: deque) -> float:
         return 0.0
     t = np.array([p[0] for p in points])
     s = np.array([p[1] for p in points])
-    t = (t - t[0]) / 3600.0  # ساعت
+    t = (t - t[0]) / 3600.0  # hours
     if t[-1] <= 0:
         return 0.0
     slope = np.polyfit(t, s, 1)[0]
@@ -91,15 +91,15 @@ async def _on_diagnosis(topic: str, msg: dict) -> None:
                 _settings.kafka_topic_alerts,
                 {
                     "code": "PREDICTIVE_FAILURE",
-                    "title": f"خرابی قریب‌الوقوع {tag} — {msg['fault_type']}",
+                    "title": f"Imminent failure of {tag} — {msg['fault_type']}",
                     "severity": "critical" if rul_hours < lead / 2 else "major",
                     "equipment_tag": tag,
                     "ts": now.isoformat(),
                     "is_predictive": True,
                     "predicted_failure_at": failure_at.isoformat(),
                     "description": (
-                        f"RUL ≈ {rul_hours:.0f} ساعت (اعتماد {confidence:.0%})؛ "
-                        f"شیب روند شدت {slope:.4f}/h؛ شاخص سلامت {score}"
+                        f"RUL ≈ {rul_hours:.0f} hours (confidence {confidence:.0%}); "
+                        f"severity trend slope {slope:.4f}/h; health index {score}"
                     ),
                 },
                 key=tag,

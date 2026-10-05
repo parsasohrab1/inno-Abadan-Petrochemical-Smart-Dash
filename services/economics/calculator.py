@@ -1,4 +1,4 @@
-"""حلقه‌ی محاسبه‌ی اقتصادی — هر بازه، سود و صرفه‌جویی لحظه‌ای را می‌سنجد و ذخیره می‌کند."""
+"""Economics computation loop — each interval measures and stores the instantaneous profit and savings."""
 from __future__ import annotations
 
 import asyncio
@@ -35,7 +35,7 @@ class EconomicsCalculator:
         self.profit_today = 0.0
         self.savings_today = 0.0
         self.savings_mtd = 0.0
-        # صرفه‌جویی محقق‌شده از اقدامات Auto Operation (رویداد-محور)
+        # realized savings from Auto Operation actions (event-driven)
         self._auto_savings_today = 0.0
         self._last_profit_rate = 0.0
         self._last_savings_rate = 0.0
@@ -110,13 +110,13 @@ class EconomicsCalculator:
             productions.append(LineProduction(
                 line_code=ln["code"], product=ln["product"], rate_tph=rate, power_kw=power,
             ))
-            # صرفه‌جویی انرژی از کاهش بارِ ناشی از اقدامات پیشگیرانه (تقریب)
+            # energy savings from load reduction due to preventive actions (approximation)
             energy_saving_rate += power * 0.02 * self.price_book["energy"]["electricity_usd_per_kwh"]
 
         profit = compute_profit_rate(productions, self.price_book)
 
         realized_auto = await self._realized_auto_savings()
-        # نرخ صرفه‌جویی جاری = صرفه‌جویی انرژی لحظه‌ای + استهلاک صرفه‌جویی‌های محقق‌شده‌ی امروز روی ۲۴ ساعت
+        # current savings rate = instantaneous energy savings + amortization of today's realized savings over 24 hours
         savings_rate = round(energy_saving_rate + realized_auto / 24.0, 2)
 
         dt_h = self.interval_s / 3600.0

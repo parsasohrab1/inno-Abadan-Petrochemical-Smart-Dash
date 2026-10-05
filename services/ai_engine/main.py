@@ -1,6 +1,6 @@
-"""مصرف ویژگی‌ها → تشخیص عیب → انتشار روی analytics.diagnosis + ذخیره در DB.
+"""Consume features → fault diagnosis → publish on analytics.diagnosis + store in the DB.
 
-هم‌چنین مصرف telemetry.acoustic برای تشخیص نشتی (FR-10).
+Also consumes telemetry.acoustic for leak detection (FR-10).
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ _settings = get_settings()
 _bus = EventBus("ai-engine")
 _clf = FaultClassifier.load(_settings.model_registry_path)
 
-# بافر ویژگی هر تجهیز (میانگین‌گیری روی محورها/قاب‌های اخیر)
+# per-equipment feature buffer (averaging over recent axes/frames)
 _buffers: dict[str, deque] = defaultdict(lambda: deque(maxlen=6))
 _ema_severity: dict[str, float] = defaultdict(float)
 _last_fault: dict[str, FaultType] = {}
@@ -59,7 +59,7 @@ async def _on_features(topic: str, msg: dict) -> None:
         {"severity": smoothed, "confidence": round(confidence, 4)},
     )
 
-    # فقط هنگام تغییر عیب یا شدت قابل‌توجه رویداد صادر می‌شود
+    # an event is emitted only when the fault or severity changes significantly
     if not changed and smoothed < 0.2:
         return
 
@@ -96,12 +96,12 @@ async def _on_acoustic(topic: str, msg: dict) -> None:
         _settings.kafka_topic_alerts,
         {
             "code": "ACOUSTIC_LEAK",
-            "title": f"احتمال نشتی صوتی در {tag}",
+            "title": f"Possible acoustic leak at {tag}",
             "severity": "major" if idx > 0.45 else "warning",
             "equipment_tag": tag,
             "ts": now,
             "is_predictive": False,
-            "description": f"شاخص انرژی فراصوت = {idx:.2f}",
+            "description": f"Ultrasonic energy index = {idx:.2f}",
         },
         key=tag,
     )

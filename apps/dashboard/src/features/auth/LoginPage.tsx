@@ -17,7 +17,7 @@ export function LoginPage() {
       await login(username, password);
       nav("/overview");
     } catch {
-      setError("نام کاربری یا گذرواژه نادرست است");
+      setError("Username or password is incorrect");
     } finally {
       setBusy(false);
     }
@@ -26,19 +26,19 @@ export function LoginPage() {
   return (
     <div className="login-wrap">
       <form className="card login-card" onSubmit={submit}>
-        <h3>ورود به داشبرد CBM پتروشیمی آبادان</h3>
+        <h3>Sign in to the Abadan Petrochemical CBM Dashboard</h3>
         <div className="grid" style={{ gap: 10 }}>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="نام کاربری" />
+          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="گذرواژه"
+            placeholder="Password"
           />
           {error && <div style={{ color: "var(--red)", fontSize: 13 }}>{error}</div>}
-          <button className="primary" disabled={busy}>{busy ? "..." : "ورود"}</button>
+          <button className="primary" disabled={busy}>{busy ? "..." : "Sign in"}</button>
           <div className="muted">
-            کاربران نمونه: manager / engineer / operator / viewer (گذرواژه: نام‌کاربری + 123)
+            Sample users: manager / engineer / operator / viewer (password: username + 123)
           </div>
         </div>
       </form>

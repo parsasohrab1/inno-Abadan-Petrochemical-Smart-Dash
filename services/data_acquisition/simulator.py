@@ -1,9 +1,9 @@
-"""شبیه‌ساز فیزیکی مجتمع — منبع داده‌ی واقع‌گرایانه برای پایپ‌لاین CBM.
+"""Physical complex simulator — realistic data source for the CBM pipeline.
 
-نکته: این شبیه‌ساز جایگزینِ «سنسور واقعی» است نه جایگزین منطق پردازش. کل مسیر
-پردازش سیگنال، تشخیص AI، RUL، سلامت سنسور، اقتصاد و Auto Operation روی خروجی
-این شبیه‌ساز به‌صورت واقعی اجرا می‌شود. با اتصال سنسور واقعی، فقط این ماژول
-با `mqtt_bridge` جایگزین می‌شود.
+Note: this simulator replaces the "real sensor", not the processing logic. The whole path of
+signal processing, AI diagnosis, RUL, sensor health, economics and Auto Operation runs for real on the output of
+this simulator. When a real sensor is connected, only this module
+is replaced with `mqtt_bridge`.
 """
 from __future__ import annotations
 
@@ -43,8 +43,8 @@ class EquipmentSim:
     design_rate_tph: float
     running: bool = True
     fault: FaultType = FaultType.NORMAL
-    onset_h: float = 0.0            # ساعت شبیه‌سازی که عیب شروع شد
-    ttf_h: float = 0.0             # زمان تا خرابی از لحظه‌ی شروع
+    onset_h: float = 0.0            # simulation hour at which the fault started
+    ttf_h: float = 0.0             # time to failure from the onset
     severity: float = 0.0
     sensors: list[dict] = field(default_factory=list)
     health: dict[str, HealthColor] = field(default_factory=dict)
@@ -53,7 +53,7 @@ class EquipmentSim:
         if not self.running:
             self.severity = max(self.severity, 0.0)
             return
-        # شروع تصادفی عیب
+        # random fault onset
         if self.fault == FaultType.NORMAL and _RNG.random() < 0.0008:
             candidates = [f for f in ALL_FAULTS if f != FaultType.NORMAL]
             self.fault = candidates[int(_RNG.integers(0, len(candidates)))]
@@ -66,7 +66,7 @@ class EquipmentSim:
 
 class PlantSimulator:
     def __init__(self, speedup: float = 720.0, frame_interval_s: float = 2.0) -> None:
-        # speedup: هر ثانیه‌ی واقعی = speedup ثانیه‌ی شبیه‌سازی (پیش‌فرض ۱۲ دقیقه)
+        # speedup: each real second = speedup simulated seconds (default 12 minutes)
         self.speedup = speedup
         self.frame_interval_s = frame_interval_s
         self.equipment: list[EquipmentSim] = []
@@ -130,7 +130,7 @@ class PlantSimulator:
 
     async def _emit_cycle(self, sim_hours: float) -> None:
         now = datetime.now(timezone.utc).isoformat()
-        # هر چرخه زیرمجموعه‌ای از تجهیزات را نمونه‌برداری می‌کند (شبیه اسکن راند رابین)
+        # each cycle samples a subset of equipment (like a round-robin scan)
         batch = _RNG.choice(self.equipment, size=min(24, len(self.equipment)), replace=False)
         for eq in batch:
             eq.step(sim_hours)
@@ -138,7 +138,7 @@ class PlantSimulator:
             if not vib_sensors:
                 continue
             spec = WaveformSpec(rpm=eq.rpm)
-            for s in vib_sensors[:3]:  # سه محور یک یاتاقان کافی است
+            for s in vib_sensors[:3]:  # three axes of one bearing are enough
                 wave = synth_waveform(eq.fault, eq.severity, spec, _RNG)
                 await self.bus.publish(
                     _settings.kafka_topic_vibration,

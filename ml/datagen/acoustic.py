@@ -1,7 +1,7 @@
-"""سیگنال صوتی سنتتیک — تشخیص نشتی و اصطکاک (README §۳-۲، FR-10).
+"""Synthetic acoustic signal — leak and friction detection (README §3-2, FR-10).
 
-نشتی گاز/بخار ⟵ نویز پهن‌باند فرکانس‌بالا (۲۰–۴۰ kHz) با پاکت پایدار.
-اصطکاک/کاویتاسیون ⟵ پالس‌های نامنظم.
+Gas/steam leak ⟵ high-frequency broadband noise (20–40 kHz) with a stable envelope.
+Friction/cavitation ⟵ irregular pulses.
 """
 from __future__ import annotations
 
@@ -17,12 +17,12 @@ def synth_acoustic(
 ) -> np.ndarray:
     rng = rng or np.random.default_rng()
     t = np.arange(n) / fs
-    x = 0.01 * rng.standard_normal(n)  # نویز محیط
-    x += 0.005 * np.sin(2 * np.pi * 120 * t)  # همهمه‌ی ماشین‌آلات
+    x = 0.01 * rng.standard_normal(n)  # ambient noise
+    x += 0.005 * np.sin(2 * np.pi * 120 * t)  # machinery hum
 
     if leak_severity > 0:
         hf = rng.standard_normal(n)
-        # فیلتر بالاگذر ساده
+        # simple high-pass filter
         hf = np.convolve(hf, [1, -0.95], mode="same")
         x += (0.03 + 0.25 * leak_severity) * hf
 
@@ -38,7 +38,7 @@ def synth_acoustic(
 
 
 def leak_index(x: np.ndarray, fs: float) -> float:
-    """نسبت انرژی باند فراصوت به کل — شاخص ساده‌ی نشتی."""
+    """Ratio of ultrasonic band energy to the total — a simple leak indicator."""
     spec = np.abs(np.fft.rfft(x * np.hanning(len(x))))
     freqs = np.fft.rfftfreq(len(x), 1 / fs)
     total = float((spec**2).sum()) + 1e-9

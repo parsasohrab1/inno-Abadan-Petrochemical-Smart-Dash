@@ -1,4 +1,4 @@
-"""لایه‌ی دسترسی به InfluxDB برای سری‌زمانی ارتعاش/صوت/فرآیند/ویژگی‌ها."""
+"""InfluxDB access layer for time series of vibration/acoustic/process/features."""
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone

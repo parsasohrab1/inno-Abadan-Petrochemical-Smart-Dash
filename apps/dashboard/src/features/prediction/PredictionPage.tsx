@@ -16,15 +16,15 @@ export function PredictionPage() {
 
   return (
     <div className="card">
-      <h3>پیش‌بینی خرابی — RUL تجهیزات (مرتب بر اساس فوریت)</h3>
+      <h3>Failure prediction — equipment RUL (sorted by urgency)</h3>
       <div className="muted" style={{ marginBottom: 10 }}>
-        هشدار پیش‌بینی حداقل ۷۲ ساعت پیش از خرابی صادر می‌شود (FR-12).
+        A predictive alert is issued at least 72 hours before failure (FR-12).
       </div>
       <table>
         <thead>
           <tr>
-            <th>تگ</th><th>نام</th><th>بحرانیت</th>
-            <th>RUL (ساعت)</th><th>تاریخ تخمینی خرابی</th><th>اعتماد</th><th>شاخص سلامت</th>
+            <th>Tag</th><th>Name</th><th>Criticality</th>
+            <th>RUL (hours)</th><th>Estimated failure date</th><th>Confidence</th><th>Health index</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@ export function PredictionPage() {
                 </span>
               </td>
               <td>{p.predicted_failure_at ? new Date(p.predicted_failure_at).toLocaleDateString("fa-IR") : "—"}</td>
-              <td>{(p.confidence * 100).toFixed(0)}٪</td>
+              <td>{(p.confidence * 100).toFixed(0)}%</td>
               <td>{p.health_score}</td>
             </tr>
           ))}

@@ -1,4 +1,4 @@
-"""API ثبت دارایی — CRUD سلسله‌مراتب + پرس‌وجوی نگاشت سنسور/دوربین."""
+"""Asset registry API — hierarchy CRUD + sensor/camera mapping queries."""
 from __future__ import annotations
 
 from typing import Annotated
@@ -43,7 +43,7 @@ app = create_app("asset-registry", on_startup=_startup)
 def get_plant(db: DbSession) -> Plant:
     plant = db.exec(select(Plant)).first()
     if not plant:
-        raise HTTPException(404, "مجتمع تعریف نشده — seed اجرا شود")
+        raise HTTPException(404, "Complex is not defined — run seed")
     return plant
 
 
@@ -92,16 +92,16 @@ def list_equipment(
 def get_equipment(tag: str, db: DbSession) -> Equipment:
     eq = db.exec(select(Equipment).where(Equipment.tag == tag)).first()
     if not eq:
-        raise HTTPException(404, f"تجهیز {tag} یافت نشد")
+        raise HTTPException(404, f"Equipment {tag} not found")
     return eq
 
 
 @app.get("/equipment/{tag}/full", tags=["equipment"])
 def get_equipment_full(tag: str, db: DbSession) -> dict:
-    """تجهیز + اجزا + همه‌ی سنسورها و دوربین‌های مرتبط (با واحد اندازه‌گیری)."""
+    """Equipment + components + all related sensors and cameras (with unit of measure)."""
     eq = db.exec(select(Equipment).where(Equipment.tag == tag)).first()
     if not eq:
-        raise HTTPException(404, f"تجهیز {tag} یافت نشد")
+        raise HTTPException(404, f"Equipment {tag} not found")
     components = db.exec(select(Component).where(Component.equipment_id == eq.id)).all()
     mounts = db.exec(select(SensorMount).where(SensorMount.equipment_id == eq.id)).all()
     sensors = []
@@ -158,7 +158,7 @@ def list_sensors(
 def sensor_context(tag: str, db: DbSession) -> dict:
     s = db.exec(select(Sensor).where(Sensor.tag == tag)).first()
     if not s:
-        raise HTTPException(404, "سنسور یافت نشد")
+        raise HTTPException(404, "Sensor not found")
     mount = db.exec(select(SensorMount).where(SensorMount.sensor_id == s.id)).first()
     eq = db.get(Equipment, mount.equipment_id) if mount and mount.equipment_id else None
     return {"sensor": s, "mount": mount, "equipment": eq}
@@ -176,7 +176,7 @@ def list_cameras(db: DbSession, kind: str | None = None, health: str | None = No
 
 @app.get("/coverage/unmonitored", tags=["cameras"])
 def unmonitored(db: DbSession) -> dict:
-    """بازرسی الزام کاربر: تجهیز/خطی که سنسور یا دوربین ندارد."""
+    """User-requirement audit: equipment/line without a sensor or camera."""
     eq_with_sensor = {m.equipment_id for m in db.exec(select(SensorMount)).all() if m.equipment_id}
     eq_with_cam = {c.equipment_id for c in db.exec(select(CameraCoverage)).all() if c.equipment_id}
     line_with_cam = {c.line_id for c in db.exec(select(CameraCoverage)).all() if c.line_id}

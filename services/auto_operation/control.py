@@ -1,7 +1,7 @@
-"""ماشین حالت روشن/خاموش تجهیز + تعویض زاپاس (changeover).
+"""Equipment on/off state machine + standby changeover.
 
-در محیط واقعی، `_send_command` به DCS/PLC (OPC-UA writeback) یا SIS متصل می‌شود.
-اینجا وضعیت در پایگاه‌داده‌ی asset-registry به‌روزرسانی و رویداد منتشر می‌شود.
+In a real environment, `_send_command` connects to the DCS/PLC (OPC-UA writeback) or SIS.
+Here the state is updated in the asset-registry database and an event is published.
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from services.common.logging import get_logger
 log = get_logger("auto-operation.control")
 _settings = get_settings()
 
-# انتقال‌های مجاز ماشین حالت
+# allowed state machine transitions
 _ALLOWED: dict[EquipmentRunState, set[EquipmentRunState]] = {
     EquipmentRunState.RUNNING: {EquipmentRunState.STOPPING, EquipmentRunState.TRIPPED},
     EquipmentRunState.STOPPING: {EquipmentRunState.STOPPED, EquipmentRunState.TRIPPED},
@@ -36,7 +36,7 @@ class ControlError(RuntimeError):
 
 
 async def _send_command(tag: str, command: str) -> None:
-    """نقطه‌ی اتصال به DCS/PLC. TODO: پیاده‌سازی OPC-UA writeback با تأیید بازخورد."""
+    """Connection point to the DCS/PLC. TODO: implement OPC-UA writeback with feedback confirmation."""
     log.info("control.command.dispatch", equipment=tag, command=command)
 
 
@@ -44,10 +44,10 @@ def _transition(session, tag: str, target: EquipmentRunState, triggered_by: str,
                 action_id: int | None, note: str | None) -> Equipment:
     eq = session.exec(select(Equipment).where(Equipment.tag == tag)).first()
     if not eq:
-        raise ControlError(f"تجهیز {tag} یافت نشد")
+        raise ControlError(f"Equipment {tag} not found")
     current = EquipmentRunState(eq.run_state)
     if target not in _ALLOWED.get(current, set()) and current != target:
-        raise ControlError(f"انتقال نامعتبر {current.value} → {target.value} برای {tag}")
+        raise ControlError(f"Invalid transition {current.value} → {target.value} for {tag}")
     session.add(EquipmentStateChange(
         ts=datetime.now(timezone.utc), equipment_tag=tag, from_state=current,
         to_state=target, triggered_by=triggered_by, action_id=action_id, note=note,
@@ -87,19 +87,19 @@ async def stop_equipment(tag: str, triggered_by: str, action_id: int | None = No
 
 async def changeover_to_spare(main_tag: str, triggered_by: str, action_id: int | None = None,
                               note: str | None = None) -> dict:
-    """روشن‌کردن زاپاس، سپس خاموش‌کردن تجهیز اصلی — بدون قطع تولید."""
+    """Start the standby, then shut down the main equipment — without interrupting production."""
     with session_scope() as s:
         main_eq = s.exec(select(Equipment).where(Equipment.tag == main_tag)).first()
         if not main_eq:
-            raise ControlError(f"تجهیز {main_tag} یافت نشد")
+            raise ControlError(f"Equipment {main_tag} not found")
         spare = s.exec(select(Equipment).where(Equipment.spare_of_id == main_eq.id)).first()
         if not spare:
-            raise ControlError(f"زاپاسی برای {main_tag} تعریف نشده")
+            raise ControlError(f"No standby is defined for {main_tag}")
         spare_tag = spare.tag
 
-    # ۱) استارت زاپاس
+    # 1) start the standby
     await start_equipment(spare_tag, triggered_by, action_id, note=f"changeover from {main_tag}")
-    # ۲) توقف تجهیز اصلی و انتقال به تعمیرات
+    # 2) stop the main equipment and move it to maintenance
     await stop_equipment(main_tag, triggered_by, action_id, note=f"changeover to {spare_tag}")
     with session_scope() as s:
         _transition(s, main_tag, EquipmentRunState.MAINTENANCE, triggered_by, action_id,
@@ -123,7 +123,7 @@ def equipment_state(tag: str) -> dict:
     with session_scope() as s:
         eq = s.exec(select(Equipment).where(Equipment.tag == tag)).first()
         if not eq:
-            raise ControlError(f"تجهیز {tag} یافت نشد")
+            raise ControlError(f"Equipment {tag} not found")
         history = s.exec(
             select(EquipmentStateChange)
             .where(EquipmentStateChange.equipment_tag == tag)

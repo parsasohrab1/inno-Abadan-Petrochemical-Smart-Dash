@@ -1,435 +1,435 @@
 # inno-Abadan-Petrochemical-Smart-Dash
-# طراحی داشبرد هوشمند CBM برای پتروشیمی آبادان
+# Design of the CBM Smart Dashboard for Abadan Petrochemical
 
 
-## ۱. مطالعه کامل پتروشیمی آبادان
+## 1. Complete study of Abadan Petrochemical
 
-### ۱-۱. تاریخچه و موقعیت
+### 1-1. History and location
 
-پتروشیمی آبادان در سال ۱۳۴۶ توسط شرکت لاماس آمریکا ساخته شد و در سال ۱۳۴۸ به بهره‌برداری رسید. این مجتمع در زمینی به مساحت ۵۰ هکتار در کوی مطهری آبادان واقع شده است. مجتمع در طی سال‌های ۱۳۵۹ تا ۱۳۶۷ در اثر جنگ تحمیلی ویران شد و پس از آن توسط نیروهای متخصص داخلی بازسازی گردید.
+Abadan Petrochemical was built in 1967 (1346 SH) by the American company Lummus and came into operation in 1969 (1348 SH). The complex is located on a 50-hectare site in Motahari district, Abadan. During 1980 to 1988 (1359–1367 SH) it was destroyed by the imposed war and was subsequently rebuilt by domestic specialists.
 
-### ۱-۲. محصولات و ظرفیت تولید
+### 1-2. Products and production capacity
 
-ظرفیت اولیه تولید سالانه شامل موارد زیر بوده است:
-- **۲۰,۰۰۰ تن** پی‌وی‌سی (PVC)
-- **۱۰,۰۰۰ تن** دودسیل‌بنزن (DDB)
-- **۲۴,۰۰۰ تن** سود سوزآور (کاستیک)
+The initial annual production capacity included the following:
+- **20,000 tons** of PVC
+- **10,000 tons** of dodecylbenzene (DDB)
+- **24,000 tons** of caustic soda
 
-در سال ۱۳۵۴ طرح گسترش به منظور افزایش تولید PVC به **۶۰,۰۰۰ تن** در سال اجرا شد. تولید PVC در سال ۱۳۸۴ به حدود ۶۰,۰۰۰ تن افزایش یافت و هدف توسعه آینده، رسیدن به تولید سالانه **۱۱۰,۰۰۰ تن** PVC می‌باشد. همچنین پتروشیمی آبادان تولیدکننده **۳۰,۰۰۰ تن کاستیک سودا** و **۱۰,۰۰۰ تن دودسیل‌بنزن** است.
+In 1975 (1354 SH) an expansion plan to increase PVC production to **60,000 tons** per year was carried out. PVC production rose to about 60,000 tons in 2005 (1384 SH), and the future development goal is to reach an annual production of **110,000 tons** of PVC. Abadan Petrochemical also produces **30,000 tons of caustic soda** and **10,000 tons of dodecylbenzene**.
 
-### ۱-۳. واحدهای تولیدی
+### 1-3. Production units
 
-واحدهای کلیدی تولیدی شامل واحدهای ۲۰۰.۳۰۰، ۴۰۰.۵۰۰، ۶۰۰.۷۰۰، ۸۰۰.۹۰۰ و ۱۰۰۰ می‌باشند که واحدهای جدید تولید PVC، تترامر و DDB نیز به‌تازگی راه‌اندازی شده‌اند. خوراک‌های حیاتی مجتمع شامل EDC، VCM، کلر و گاز می‌باشد.
+The key production units include units 200.300, 400.500, 600.700, 800.900 and 1000, and new PVC, tetramer and DDB production units have also recently been commissioned. The vital feedstocks of the complex include EDC, VCM, chlorine and gas.
 
-### ۱-۴. شرایط محیطی
+### 1-4. Environmental conditions
 
-مجتمع در منطقه‌ای با شرایط آب‌وهوایی سخت قرار دارد:
-- حداکثر دمای طراحی: **۴۹ درجه سانتی‌گراد**
-- حداکثر دمای مطلق: **۵۵ درجه سانتی‌گراد**
-- حداقل دما: **۵- درجه سانتی‌گراد**
-- رطوبت نسبی: حداکثر ۱۰۰٪ و حداقل ۴٪
-- ارتفاع از سطح دریا: ۱/۵ متر
+The complex is located in an area with harsh climatic conditions:
+- Maximum design temperature: **49 degrees Celsius**
+- Absolute maximum temperature: **55 degrees Celsius**
+- Minimum temperature: **-5 degrees Celsius**
+- Relative humidity: maximum 100% and minimum 4%
+- Altitude above sea level: 1.5 meters
 
-### ۱-۵. وضعیت تجهیزات
+### 1-5. Equipment status
 
-با توجه به قدمت بالای مجتمع (بیش از ۵۵ سال) و تأثیرات جنگ، **تجهیزات فرسوده** یکی از چالش‌های اصلی محسوب می‌شود. شرکت برنامه نوسازی تجهیزات فرسوده در واحدهای کلیدی را در دستور کار قرار داده است.
+Given the complex's age (more than 55 years) and the effects of the war, **aging equipment** is one of the main challenges. The company has put a renewal program for aging equipment in key units on its agenda.
 
 
-## ۲. معماری کلی سیستم داشبرد هوشمند CBM
+## 2. Overall architecture of the CBM smart dashboard system
 
-### ۲-۱. لایه‌های معماری
+### 2-1. Architecture layers
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    لایه نمایش (Dashboard)                       │
+│                    Presentation layer (Dashboard)               │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
-│  │ نقشه حرارتی│ │ سلامت   │ │ پیش‌بینی │ │ هشدارها  │         │
-│  │ تجهیزات   │ │ تجهیزات │ │ خرابی   │ │ لحظه‌ای  │         │
+│  │ Heat map   │ │ Equipment│ │ Failure  │ │ Real-time│         │
+│  │ of equip.  │ │ health   │ │ forecast │ │ alerts   │         │
 │  └──────────┘ └──────────┘ └──────────┘ └──────────┘         │
 ├─────────────────────────────────────────────────────────────────┤
-│                    لایه تحلیل (AI/ML Engine)                    │
+│                    Analysis layer (AI/ML Engine)                │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
-│  │ تشخیص    │ │ پیش‌بینی │ │ تحلیل    │ │ Auto     │         │
-│  │ الگو     │ │ RUL      │ │ طیفی     │ │ Operation│         │
+│  │ Pattern  │ │ RUL      │ │ Spectral │ │ Auto     │         │
+│  │ detection│ │ forecast │ │ analysis │ │ Operation│         │
 │  └──────────┘ └──────────┘ └──────────┘ └──────────┘         │
 ├─────────────────────────────────────────────────────────────────┤
-│                    لایه پردازش (Edge/Cloud)                     │
+│                    Processing layer (Edge/Cloud)                │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
-│  │ FFT /    │ │ فیلتر   │ │ Feature  │ │ Data     │         │
-│  │ Wavelet  │ │ نویز    │ │ Extraction│ │ Fusion   │         │
+│  │ FFT /    │ │ Noise   │ │ Feature  │ │ Data     │         │
+│  │ Wavelet  │ │ filter  │ │ Extraction│ │ Fusion   │         │
 │  └──────────┘ └──────────┘ └──────────┘ └──────────┘         │
 ├─────────────────────────────────────────────────────────────────┤
-│                    لایه داده (Data Acquisition)                 │
+│                    Data layer (Data Acquisition)                │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
-│  │ سنسورهای │ │ سنسورهای │ │ دوربین   │ │ داده‌های │         │
-│  │ ارتعاش   │ │ صوتی     │ │ حرارتی   │ │ فرآیندی  │         │
+│  │ Vibration│ │ Acoustic │ │ Thermal  │ │ Process  │         │
+│  │ sensors  │ │ sensors  │ │ cameras  │ │ data     │         │
 │  └──────────┘ └──────────┘ └──────────┘ └──────────┘         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### ۲-۲. استانداردهای مرجع
+### 2-2. Reference standards
 
-سیستم بر اساس استانداردهای زیر طراحی می‌شود:
-- **ISO 17359**: راهنمای عمومی برای پایش وضعیت و عیب‌یابی ماشین‌آلات
-- **ISO 14224**: جمع‌آوری داده‌های قابلیت‌اطمینان و نگهداری برای تجهیزات
-- **ISO 13374**: پردازش داده‌های پایش وضعیت
+The system is designed based on the following standards:
+- **ISO 17359**: General guidelines for condition monitoring and diagnostics of machines
+- **ISO 14224**: Collection of reliability and maintenance data for equipment
+- **ISO 13374**: Condition monitoring data processing
 
 
-## ۳. ورودی‌های سیستم (Inputs)
+## 3. System inputs (Inputs)
 
-### ۳-۱. سنسورهای ارتعاش (Vibration Sensors)
+### 3-1. Vibration sensors (Vibration Sensors)
 
-| نوع سنسور | تعداد | مکان نصب | محدوده اندازه‌گیری |
+| Sensor type | Quantity | Installation location | Measurement range |
 |-----------|-------|----------|-------------------|
-| شتاب‌سنج سه‌محوره (IEPE) | ۲۰۰+ | بر روی یاتاقان‌های کمپرسورها، پمپ‌ها، فن‌ها | ۰-۵۰ kHz |
-| سنسور سرعت (Velometer) | ۱۰۰+ | بر روی بدنه تجهیزات دوار | ۰-۱۰۰ mm/s |
-| سنسور جابه‌جایی (Proximity Probe) | ۵۰+ | بر روی شفت توربین‌ها و کمپرسورهای بزرگ | ۰-۲ mm |
+| Triaxial accelerometer (IEPE) | 200+ | On bearings of compressors, pumps, fans | 0-50 kHz |
+| Velocity sensor (Velometer) | 100+ | On the casing of rotating equipment | 0-100 mm/s |
+| Displacement sensor (Proximity Probe) | 50+ | On the shaft of turbines and large compressors | 0-2 mm |
 
-### ۳-۲. سنسورهای صوتی (Acoustic Sensors)
+### 3-2. Acoustic sensors (Acoustic Sensors)
 
-| نوع سنسور | تعداد | مکان نصب | کاربرد |
+| Sensor type | Quantity | Installation location | Application |
 |-----------|-------|----------|--------|
-| میکروفون فرکانس بالا (Ultrasonic) | ۸۰+ | نزدیک یاتاقان‌ها و شیرها | تشخیص نشتی و اصطکاک |
-| سنسور صوتی باند وسیع | ۵۰+ | محیط واحدهای تولیدی | آنالیز نویز محیطی |
-| سنسور AE (Acoustic Emission) | ۳۰+ | بر روی مخازن تحت فشار و خطوط لوله | تشخیص ترک‌خوردگی |
+| High-frequency microphone (Ultrasonic) | 80+ | Near bearings and valves | Leak and friction detection |
+| Broadband acoustic sensor | 50+ | Environment of production units | Ambient noise analysis |
+| AE sensor (Acoustic Emission) | 30+ | On pressure vessels and pipelines | Crack detection |
 
-### ۳-۳. دوربین‌های هوشمند و حرارتی
+### 3-3. Smart and thermal cameras
 
-| نوع دوربین | تعداد | مکان نصب | کاربرد |
+| Camera type | Quantity | Installation location | Application |
 |------------|-------|----------|--------|
-| دوربین حرارتی (Thermal Imaging) | ۲۵+ | نقاط استراتژیک واحدها | پایش دماي تجهیزات و نشتی حرارتی |
-| دوربین مداربسته هوشمند (AI-Enabled CCTV) | ۴۰+ | سراسر مجتمع | تشخیص نشت، شعله، دود و رفتار غیرعادی |
-| دوربین طیف‌سنج (Hyperspectral) | ۵+ | واحدهای کلیدی | تشخیص نشتی گاز |
+| Thermal camera (Thermal Imaging) | 25+ | Strategic points of the units | Monitoring equipment temperature and thermal leaks |
+| Smart CCTV camera (AI-Enabled CCTV) | 40+ | Throughout the complex | Detection of leaks, flame, smoke and abnormal behavior |
+| Hyperspectral camera (Hyperspectral) | 5+ | Key units | Gas leak detection |
 
-### ۳-۴. سنسورهای فرآیندی
+### 3-4. Process sensors
 
-| نوع سنسور | تعداد | پارامترهای اندازه‌گیری |
+| Sensor type | Quantity | Measured parameters |
 |-----------|-------|----------------------|
-| سنسور فشار | ۱۵۰+ | فشار خطوط، مخازن و راکتورها |
-| سنسور دما (RTD/TC) | ۲۰۰+ | دمای فرآیند در نقاط مختلف |
-| سنسور دبی (Flow Meter) | ۱۰۰+ | دبی خوراک و محصولات |
-| سنسور سطح (Level) | ۸۰+ | سطح مخازن و برج‌ها |
-| سنسور گاز (Gas Detector) | ۱۲۰+ | تشخیص گازهای قابل اشتعال و سمی |
+| Pressure sensor | 150+ | Line, tank and reactor pressure |
+| Temperature sensor (RTD/TC) | 200+ | Process temperature at various points |
+| Flow meter (Flow Meter) | 100+ | Feed and product flow |
+| Level sensor (Level) | 80+ | Level of tanks and towers |
+| Gas detector (Gas Detector) | 120+ | Detection of flammable and toxic gases |
 
-### ۳-۵. داده‌های ورودی دیگر
+### 3-5. Other input data
 
-- **داده‌های DCS/PLC**: پارامترهای عملیاتی از سیستم کنترل توزیع‌شده
-- **داده‌های تعمیرات**: سوابق تعمیرات، تعویض قطعات، بازرسی‌ها
-- **داده‌های محیطی**: دما، رطوبت، فشار اتمسفر
-- **داده‌های عملیاتی**: بار تجهیزات، دور موتور، جریان الکتریکی
+- **DCS/PLC data**: operating parameters from the distributed control system
+- **Maintenance data**: repair records, part replacements, inspections
+- **Environmental data**: temperature, humidity, atmospheric pressure
+- **Operational data**: equipment load, motor speed, electric current
 
 
-## ۴. خروجی‌های سیستم (Outputs)
+## 4. System outputs (Outputs)
 
-### ۴-۱. داشبرد اصلی
+### 4-1. Main dashboard
 
-| بخش داشبرد | محتوای خروجی | فرمت نمایش |
+| Dashboard section | Output content | Display format |
 |-------------|--------------|------------|
-| **نمای کلی مجتمع** | نقشه حرارتی ۳ بعدی از وضعیت تمام تجهیزات | نمایش گرافیکی با کدهای رنگی |
-| **سلامت تجهیزات** | شاخص سلامت هر تجهیز (۰-۱۰۰) | گیج/نوار پیشرفت رنگی |
-| **پیش‌بینی خرابی** | RUL (Remaining Useful Life) هر تجهیز | عدد + نمودار روند |
-| **هشدارها** | هشدارهای لحظه‌ای با اولویت‌بندی | لیست با کد رنگی |
-| **تحلیل ارتعاش** | طیف فرکانسی، شکل‌موج، روندها | نمودارهای FFT و Waterfall |
-| **تحلیل صوتی** | الگوهای صوتی، تشخیص نشتی | نمودار و نمایشگر صوتی |
-| **عملکرد Auto Operation** | وضعیت اقدامات خودکار انجام‌شده | گزارش عملکرد |
+| **Complex overview** | 3D heat map of the status of all equipment | Graphical display with color codes |
+| **Equipment health** | Health index of each equipment (0-100) | Gauge/colored progress bar |
+| **Failure prediction** | RUL (Remaining Useful Life) of each equipment | Number + trend chart |
+| **Alerts** | Real-time alerts with prioritization | List with color code |
+| **Vibration analysis** | Frequency spectrum, waveform, trends | FFT and Waterfall charts |
+| **Acoustic analysis** | Acoustic patterns, leak detection | Chart and audio display |
+| **Auto Operation performance** | Status of automatic actions performed | Performance report |
 
-### ۴-۲. خروجی‌های تحلیلی
+### 4-2. Analytical outputs
 
-- **گزارش‌های روزانه/هفتگی/ماهانه**: خلاصه وضعیت تجهیزات و اقدامات پیشنهادی
-- **هشدارهای پیش‌بینی**: اعلان‌های خرابی قریب‌الوقوع با زمان دقیق تخمینی
-- **دستورالعمل‌های تعمیراتی**: توصیه‌های دقیق برای هر نوع عیب شناسایی‌شده
-- **گزارش هزینه-فایده**: تحلیل بازگشت سرمایه سیستم CBM
-- **گزارش عملکرد AI**: دقت تشخیص، نرخ هشدارهای اشتباه، بهبودهای مدل
+- **Daily/weekly/monthly reports**: summary of equipment status and recommended actions
+- **Predictive alerts**: notifications of imminent failure with an exact estimated time
+- **Maintenance instructions**: detailed recommendations for each identified fault type
+- **Cost-benefit report**: return-on-investment analysis of the CBM system
+- **AI performance report**: detection accuracy, false alarm rate, model improvements
 
 
-## ۵. سنسورها و پایش سلامت آنها
+## 5. Sensors and their health monitoring
 
-### ۵-۱. کدهای رنگی سلامت سنسورها
+### 5-1. Sensor health color codes
 
-بر اساس استانداردهای صنعتی:
+Based on industry standards:
 
-| رنگ | وضعیت | معنی | اقدام موردنیاز |
+| Color | Status | Meaning | Required action |
 |-----|-------|------|----------------|
-| **سبز** | سالم (Normal) | سنسور به‌درستی کار می‌کند و داده‌های معتبر ارسال می‌کند | پایش عادی |
-| **زرد** | هشدار (Warning) | سنسور انحراف از وضعیت بهینه دارد یا کالیبراسیون نیاز دارد | بررسی و کالیبراسیون مجدد |
-| **نارنجی** | خطا (Fault) | سنسور خراب یا داده‌های نامعتبر ارسال می‌کند | تعویض یا تعمیر سنسور |
+| **Green** | Healthy (Normal) | The sensor works correctly and sends valid data | Normal monitoring |
+| **Yellow** | Warning (Warning) | The sensor deviates from the optimal state or needs calibration | Check and recalibrate |
+| **Orange** | Fault (Fault) | The sensor is faulty or sends invalid data | Replace or repair the sensor |
 
-### ۵-۲. پارامترهای پایش سلامت سنسورها
+### 5-2. Sensor health monitoring parameters
 
-هر سنسور به صورت خودکار از نظر موارد زیر پایش می‌شود:
-1. **ولتاژ تغذیه**: محدوده مجاز ۲۴V ± ۵٪
-2. **سیگنال خروجی**: بررسی محدوده ۴-۲۰mA
-3. **کیفیت سیگنال**: نسبت سیگنال به نویز (SNR)
-4. **دقت اندازه‌گیری**: انحراف از مقدار مرجع
-5. **ارتباطات**: نرخ ارسال داده و تاخیر
-6. **دمای عملیاتی**: دمای سنسور در محدوده مجاز
+Each sensor is automatically monitored for the following:
+1. **Supply voltage**: allowed range 24V ± 5%
+2. **Output signal**: check the 4-20mA range
+3. **Signal quality**: signal-to-noise ratio (SNR)
+4. **Measurement accuracy**: deviation from the reference value
+5. **Communication**: data transmission rate and delay
+6. **Operating temperature**: sensor temperature within the allowed range
 
 
-## ۶. اوپراتور هوشمند (Auto Operation)
+## 6. Smart Operator (Auto Operation)
 
-### ۶-۱. تعریف Auto Operation
+### 6-1. Definition of Auto Operation
 
-سیستم Auto Operation با الهام از راه‌حل‌های پیشرو صنعت مانند **Honeywell Experion Cognition** و **ABB Ability Genix** طراحی شده است که اولین نمونه‌های آن در صنعت پتروشیمی توسط شرکت **Borouge** در امارات پیاده‌سازی شده است.
+The Auto Operation system is designed inspired by leading industry solutions such as **Honeywell Experion Cognition** and **ABB Ability Genix**, the first examples of which in the petrochemical industry were implemented by **Borouge** in the UAE.
 
-### ۶-۲. وظایف اوپراتور هوشمند
+### 6-2. Smart operator tasks
 
-| سطح | وظیفه | شرح |
+| Level | Task | Description |
 |-----|-------|------|
-| **سطح ۱: پایش** | مانیتورینگ خودکار | پایش ۲۴/۷ تمام سنسورها و تجهیزات |
-| **سطح ۲: تحلیل** | تحلیل هوشمند | تشخیص الگوهای خرابی با دقت > ۹۵٪ |
-| **سطح ۳: هشدار** | هشداردهی هوشمند | ارسال هشدار با اولویت‌بندی و مستندات |
-| **سطح ۴: توصیه** | ارائه راهکار | پیشنهاد اقدامات اصلاحی دقیق |
-| **سطح ۵: اقدام** | اجرای خودکار | انجام اقدامات بدون نیاز به اپراتور انسانی |
+| **Level 1: Monitoring** | Automatic monitoring | 24/7 monitoring of all sensors and equipment |
+| **Level 2: Analysis** | Intelligent analysis | Detection of failure patterns with accuracy > 95% |
+| **Level 3: Alerting** | Intelligent alerting | Sending alerts with prioritization and documentation |
+| **Level 4: Recommendation** | Providing solutions | Proposing precise corrective actions |
+| **Level 5: Action** | Automatic execution | Performing actions without the need for a human operator |
 
-### ۶-۳. اقدامات خودکار قابل اجرا
+### 6-3. Executable automatic actions
 
-1. **تنظیم خودکار پارامترها**: تغییر دور موتور، دبی، فشار بر اساس شرایط
-2. **تعویض خودکار خطوط**: تغییر به خط تولید پشتیبان در صورت خرابی
-3. **درخواست خودکار قطعات**: ارسال درخواست قطعات یدکی به انبار
-4. **برنامه‌ریزی خودکار تعمیرات**: تنظیم زمان تعمیرات بر اساس اولویت
-5. **گزارش‌دهی خودکار**: ارسال گزارش به مدیران و تیم‌های مربوطه
+1. **Automatic parameter adjustment**: changing motor speed, flow, pressure according to conditions
+2. **Automatic line switching**: switching to the backup production line in case of failure
+3. **Automatic parts request**: sending a spare parts request to the warehouse
+4. **Automatic maintenance scheduling**: setting the maintenance time based on priority
+5. **Automatic reporting**: sending reports to managers and the relevant teams
 
 
-## ۷. بنچمارک با نمونه‌های جهانی
+## 7. Benchmark with global examples
 
-### ۷-۱. مقایسه با سیستم‌های مشابه جهانی
+### 7-1. Comparison with similar global systems
 
-| مشخصه | سیستم پیشنهادی | ABB Ability | Honeywell Forge | AVEVA Digital Twin |
+| Feature | Proposed system | ABB Ability | Honeywell Forge | AVEVA Digital Twin |
 |-------|---------------|-------------|-----------------|-------------------|
-| **آنالیز ارتعاش** | ✅ پیشرفته (AI) | ✅ | ✅ | ✅ |
-| **آنالیز صوتی** | ✅ | ❌ | ❌ | ❌ |
-| **دوربین حرارتی** | ✅ | ✅ | ✅ | ❌ |
-| **AI/ML تشخیص عیب** | ✅ LSTM+CNN | ✅ Genix | ✅ | ✅ |
-| **Auto Operation** | ✅ | ⚠️ محدود | ✅ Experion | ❌ |
-| **پایش سلامت سنسور** | ✅ | ✅ | ✅ | ❌ |
-| **داشبرد هوشمند** | ✅ | ✅ | ✅ | ✅ |
-| **قابلیت اطمینان** | > ۹۹٪ | ۹۹٪ | ۹۹٪ | ۹۸٪ |
+| **Vibration analysis** | ✅ Advanced (AI) | ✅ | ✅ | ✅ |
+| **Acoustic analysis** | ✅ | ❌ | ❌ | ❌ |
+| **Thermal camera** | ✅ | ✅ | ✅ | ❌ |
+| **AI/ML fault detection** | ✅ LSTM+CNN | ✅ Genix | ✅ | ✅ |
+| **Auto Operation** | ✅ | ⚠️ Limited | ✅ Experion | ❌ |
+| **Sensor health monitoring** | ✅ | ✅ | ✅ | ❌ |
+| **Smart dashboard** | ✅ | ✅ | ✅ | ✅ |
+| **Reliability** | > 99% | 99% | 99% | 98% |
 
-### ۷-۲. نقاط قوت نسبت به نمونه‌های جهانی
+### 7-2. Strengths relative to global examples
 
-1. **ادغام آنالیز صوتی و ارتعاش**: در نمونه‌های جهانی معمولاً فقط از ارتعاش استفاده می‌شود
-2. **پوشش کامل تجهیزات با دوربین**: پایش تصویری و حرارتی تمام تجهیزات
-3. **سیستم Auto Operation کامل**: مشابه پروژه پیشرو Borouge در امارات
-4. **پایش سلامت سنسورها با کدهای رنگی**: افزایش قابلیت اطمینان داده‌ها
-5. **هزینه پیاده‌سازی مناسب‌تر**: استفاده از توان داخلی
+1. **Integration of acoustic and vibration analysis**: global examples usually use only vibration
+2. **Full equipment camera coverage**: visual and thermal monitoring of all equipment
+3. **Complete Auto Operation system**: similar to the leading Borouge project in the UAE
+4. **Sensor health monitoring with color codes**: increases data reliability
+5. **More suitable implementation cost**: use of domestic capacity
 
-### ۷-۳. نقاط قابل بهبود نسبت به نمونه‌های جهانی
+### 7-3. Areas for improvement relative to global examples
 
-1. **یکپارچگی با زنجیره تأمین**: اتصال به سیستم‌های تأمین‌کنندگان قطعات
-2. **دیجیتال توین کامل ۳ بعدی**: مشابه AVEVA
-3. **سیستم پیشنهاددهنده تعمیرات پیشگیرانه**: بر اساس تحلیل هزینه-فایده
-
-
-## ۸. موارد اضافه‌شده به سیستم
-
-### ۸-۱. پوشش کامل خط تولید با دوربین
-
-تمامی واحدهای تولیدی شامل:
-- واحدهای ۲۰۰.۳۰۰، ۴۰۰.۵۰۰، ۶۰۰.۷۰۰، ۸۰۰.۹۰۰ و ۱۰۰۰
-- واحدهای جدید تولید PVC، تترامر و DDB
-- واحد کلرآلکالی
-- مخازن ذخیره و خطوط لوله
-
-### ۸-۲. پایش سلامت سنسورها با کدهای رنگی
-
-سیستمی مشابه استانداردهای صنعتی برای نمایش وضعیت سنسورها:
-- **سبز**: عملکرد عادی
-- **زرد**: نیاز به بررسی/کالیبراسیون
-- **نارنجی**: خرابی/نیاز به تعویض
-
-### ۸-۳. سیستم Auto Operation کامل
-
-با قابلیت‌های فراتر از نمونه‌های جهانی شامل:
-- تشخیص خودکار الگوهای خرابی با دقت > ۹۵٪
-- پیشنهاد و اجرای خودکار اقدامات اصلاحی
-- کاهش ۲۰٪ در زمان توقف غیربرنامه‌ریزی‌شده (مشابه نتایج Borouge)
+1. **Supply chain integration**: connection to spare part suppliers' systems
+2. **Complete 3D digital twin**: similar to AVEVA
+3. **Preventive maintenance recommender system**: based on cost-benefit analysis
 
 
-## ۹. اسناد SRS (Software Requirements Specification)
+## 8. Items added to the system
 
-### سند SRS سیستم داشبرد هوشمند CBM پتروشیمی آبادان
+### 8-1. Full production line coverage with cameras
 
----
+All production units including:
+- Units 200.300, 400.500, 600.700, 800.900 and 1000
+- New PVC, tetramer and DDB production units
+- Chlor-alkali unit
+- Storage tanks and pipelines
 
-#### ۱. مقدمه
+### 8-2. Sensor health monitoring with color codes
 
-##### ۱-۱. هدف
-این سند، نیازمندی‌های نرم‌افزاری سیستم داشبرد هوشمند پایش وضعیت مبتنی بر شرایط (CBM) را برای پتروشیمی آبادان مشخص می‌کند. هدف اصلی، افزایش راندمان تجهیزات فرسوده از طریق آنالیز ارتعاشات و صوت با استفاده از هوش مصنوعی است.
+A system similar to industry standards for displaying sensor status:
+- **Green**: normal operation
+- **Yellow**: needs check/calibration
+- **Orange**: failure/needs replacement
 
-##### ۱-۲. دامنه
-سیستم شامل پایش ۵۰۰+ تجهیزات دوار، ۸۰۰+ سنسور، ۴۰+ دوربین هوشمند و حرارتی، و سیستم Auto Operation برای تمام واحدهای تولیدی مجتمع می‌باشد.
+### 8-3. Complete Auto Operation system
 
-##### ۱-۳. مخاطبان
-- مدیران ارشد و میانی پتروشیمی
-- اپراتورهای کنترل‌خانه
-- تیم نگهداری و تعمیرات
-- مهندسین بهره‌برداری
-- تیم HSE
+With capabilities beyond global examples, including:
+- Automatic detection of failure patterns with accuracy > 95%
+- Automatic proposal and execution of corrective actions
+- 20% reduction in unplanned downtime (similar to Borouge results)
+
+
+## 9. SRS documents (Software Requirements Specification)
+
+### SRS document of the Abadan Petrochemical CBM smart dashboard system
 
 ---
 
-#### ۲. نیازمندی‌های کلی سیستم
+#### 1. Introduction
 
-##### ۲-۱. نیازمندی‌های سخت‌افزاری
+##### 1-1. Purpose
+This document specifies the software requirements of the smart condition-based monitoring (CBM) dashboard system for Abadan Petrochemical. The main goal is to increase the efficiency of aging equipment through vibration and acoustic analysis using artificial intelligence.
 
-| مولفه | مشخصات | تعداد |
+##### 1-2. Scope
+The system includes monitoring of 500+ rotating equipment, 800+ sensors, 40+ smart and thermal cameras, and an Auto Operation system for all production units of the complex.
+
+##### 1-3. Audience
+- Senior and middle managers of the petrochemical
+- Control room operators
+- Maintenance and repair team
+- Operations engineers
+- HSE team
+
+---
+
+#### 2. General system requirements
+
+##### 2-1. Hardware requirements
+
+| Component | Specifications | Quantity |
 |-------|--------|-------|
-| سرور مرکزی | ۲x Intel Xeon, 256GB RAM, 10TB Storage | ۲ (Active-Active) |
-| سرورهای Edge | ۴x Intel Xeon, 64GB RAM, 2TB Storage | ۵ عدد |
-| ایستگاه‌های کاری | Core i7, 32GB RAM, 4K Monitor | ۱۰ عدد |
-| شبکه | Fiber Optic 10GbE + Wireless Mesh | - |
-| ذخیره‌سازی | SAN با redundancy + Cloud Backup | ۵۰TB |
+| Central server | 2x Intel Xeon, 256GB RAM, 10TB Storage | 2 (Active-Active) |
+| Edge servers | 4x Intel Xeon, 64GB RAM, 2TB Storage | 5 units |
+| Workstations | Core i7, 32GB RAM, 4K Monitor | 10 units |
+| Network | Fiber Optic 10GbE + Wireless Mesh | - |
+| Storage | SAN with redundancy + Cloud Backup | 50TB |
 
-##### ۲-۲. نیازمندی‌های نرم‌افزاری
+##### 2-2. Software requirements
 
-| مولفه | مشخصات |
+| Component | Specifications |
 |-------|--------|
-| سیستم‌عامل | Linux (Ubuntu 22.04 LTS) / Windows Server 2022 |
-| پایگاه داده | Time-Series (InfluxDB) + SQL (PostgreSQL) |
-| پلتفرم AI | TensorFlow 2.x / PyTorch |
-| داشبرد | React.js / Grafana |
-| پیام‌رسانی | MQTT / Kafka |
-| امنیت | TLS 1.3, RBAC, 2FA |
+| Operating system | Linux (Ubuntu 22.04 LTS) / Windows Server 2022 |
+| Database | Time-Series (InfluxDB) + SQL (PostgreSQL) |
+| AI platform | TensorFlow 2.x / PyTorch |
+| Dashboard | React.js / Grafana |
+| Messaging | MQTT / Kafka |
+| Security | TLS 1.3, RBAC, 2FA |
 
 ---
 
-#### ۳. نیازمندی‌های عملکردی (Functional Requirements)
+#### 3. Functional requirements (Functional Requirements)
 
-##### ۳-۱. ماژول جمع‌آوری داده
+##### 3-1. Data collection module
 
-| کد | نیازمندی | اولویت |
+| Code | Requirement | Priority |
 |----|----------|--------|
-| FR-01 | سیستم باید داده‌های ارتعاش را با نرخ نمونه‌برداری حداقل ۲۵.۶ kHz از تمام سنسورها جمع‌آوری کند | بالا |
-| FR-02 | سیستم باید داده‌های صوتی را با نرخ نمونه‌برداری حداقل ۴۴.۱ kHz جمع‌آوری کند | بالا |
-| FR-03 | سیستم باید تصاویر حرارتی را با رزولوشن حداقل ۶۴۰×۴۸۰ پیکسل از دوربین‌ها دریافت کند | متوسط |
-| FR-04 | سیستم باید داده‌های فرآیندی را از DCS با نرخ حداقل ۱ Hz دریافت کند | بالا |
-| FR-05 | سیستم باید قابلیت هم‌زمان‌سازی داده‌ها با دقت ±۱ms را داشته باشد | بالا |
+| FR-01 | The system must collect vibration data from all sensors at a sampling rate of at least 25.6 kHz | High |
+| FR-02 | The system must collect acoustic data at a sampling rate of at least 44.1 kHz | High |
+| FR-03 | The system must receive thermal images from cameras with a resolution of at least 640×480 pixels | Medium |
+| FR-04 | The system must receive process data from the DCS at a rate of at least 1 Hz | High |
+| FR-05 | The system must be able to synchronize data with ±1ms accuracy | High |
 
-##### ۳-۲. ماژول پردازش و تحلیل
+##### 3-2. Processing and analysis module
 
-| کد | نیازمندی | اولویت |
+| Code | Requirement | Priority |
 |----|----------|--------|
-| FR-06 | سیستم باید تبدیل FFT را روی سیگنال‌های ارتعاش با پنجره Hann انجام دهد | بالا |
-| FR-07 | سیستم باید استخراج ویژگی‌های آماری (RMS, Peak, Crest Factor, Kurtosis) را انجام دهد | بالا |
-| FR-08 | سیستم باید مدل‌های LSTM و CNN را برای تشخیص الگوهای خرابی پیاده‌سازی کند | بالا |
-| FR-09 | سیستم باید قابلیت تشخیص ۱۶ نوع عیب رایج در تجهیزات دوار را داشته باشد | بالا |
-| FR-10 | سیستم باید تحلیل طیفی صوت را برای تشخیص نشتی انجام دهد | متوسط |
+| FR-06 | The system must perform an FFT on vibration signals with a Hann window | High |
+| FR-07 | The system must extract statistical features (RMS, Peak, Crest Factor, Kurtosis) | High |
+| FR-08 | The system must implement LSTM and CNN models to detect failure patterns | High |
+| FR-09 | The system must be able to detect 16 common fault types in rotating equipment | High |
+| FR-10 | The system must perform acoustic spectral analysis for leak detection | Medium |
 
-##### ۳-۳. ماژول پیش‌بینی
+##### 3-3. Prediction module
 
-| کد | نیازمندی | اولویت |
+| Code | Requirement | Priority |
 |----|----------|--------|
-| FR-11 | سیستم باید RUL (Remaining Useful Life) را با دقت ±۵٪ برای هر تجهیز تخمین بزند | بالا |
-| FR-12 | سیستم باید هشدارهای پیش‌بینی را حداقل ۷۲ ساعت قبل از خرابی صادر کند | بالا |
-| FR-13 | سیستم باید روند تغییرات پارامترها را برای دوره‌های ۷، ۳۰ و ۹۰ روزه نمایش دهد | بالا |
+| FR-11 | The system must estimate the RUL (Remaining Useful Life) of each equipment with ±5% accuracy | High |
+| FR-12 | The system must issue predictive alerts at least 72 hours before failure | High |
+| FR-13 | The system must display parameter trends for 7, 30 and 90-day periods | High |
 
-##### ۳-۴. ماژول Auto Operation
+##### 3-4. Auto Operation module
 
-| کد | نیازمندی | اولویت |
+| Code | Requirement | Priority |
 |----|----------|--------|
-| FR-14 | سیستم باید به‌صورت خودکار تنظیمات پارامترهای عملیاتی را بر اساس شرایط تجهیزات تغییر دهد | بالا |
-| FR-15 | سیستم باید درخواست تعمیرات را به‌صورت خودکار به تیم مربوطه ارسال کند | بالا |
-| FR-16 | سیستم باید برنامه تعمیرات را به‌صورت خودکار بهینه‌سازی کند | متوسط |
-| FR-17 | سیستم باید قابلیت تایید انسانی برای اقدامات حیاتی را داشته باشد (Human-in-the-loop) | بالا |
+| FR-14 | The system must automatically change operating parameter settings based on equipment conditions | High |
+| FR-15 | The system must automatically send maintenance requests to the relevant team | High |
+| FR-16 | The system must automatically optimize the maintenance schedule | Medium |
+| FR-17 | The system must have human confirmation capability for critical actions (Human-in-the-loop) | High |
 
-##### ۳-۵. ماژول داشبرد و گزارش‌دهی
+##### 3-5. Dashboard and reporting module
 
-| کد | نیازمندی | اولویت |
+| Code | Requirement | Priority |
 |----|----------|--------|
-| FR-18 | سیستم باید داشبوردی با نمایش لحظه‌ای وضعیت تمام تجهیزات با کدهای رنگی ارائه دهد | بالا |
-| FR-19 | سیستم باید گزارش‌های روزانه، هفتگی و ماهانه به‌صورت خودکار تولید کند | بالا |
-| FR-20 | سیستم باید قابلیت مشاهده تاریخچه داده‌ها و روندها برای دوره‌های مختلف را داشته باشد | بالا |
-| FR-21 | سیستم باید هشدارها را از طریق ایمیل، پیامک و اعلان درون‌برنامه‌ای ارسال کند | بالا |
+| FR-18 | The system must provide a dashboard showing the real-time status of all equipment with color codes | High |
+| FR-19 | The system must automatically generate daily, weekly and monthly reports | High |
+| FR-20 | The system must be able to view data history and trends for different periods | High |
+| FR-21 | The system must send alerts via email, SMS and in-app notification | High |
 
 ---
 
-#### ۴. نیازمندی‌های غیرعملیاتی (Non-Functional Requirements)
+#### 4. Non-functional requirements (Non-Functional Requirements)
 
-##### ۴-۱. عملکرد (Performance)
+##### 4-1. Performance (Performance)
 
-| کد | نیازمندی | مقدار |
+| Code | Requirement | Value |
 |----|----------|-------|
-| NFR-01 | زمان پاسخ‌دهی داشبرد | < ۲ ثانیه |
-| NFR-02 | تاخیر end-to-end داده‌ها | < ۵۰۰ms |
-| NFR-03 | نرخ نمونه‌برداری ارتعاش | ≥ ۲۵.۶ kHz |
-| NFR-04 | ظرفیت پردازش همزمان | ≥ ۱۰,۰۰۰ داده/ثانیه |
-| NFR-05 | زمان بازیابی پس از خرابی (RTO) | < ۱ ساعت |
+| NFR-01 | Dashboard response time | < 2 seconds |
+| NFR-02 | End-to-end data delay | < 500ms |
+| NFR-03 | Vibration sampling rate | ≥ 25.6 kHz |
+| NFR-04 | Concurrent processing capacity | ≥ 10,000 data points/second |
+| NFR-05 | Recovery time after failure (RTO) | < 1 hour |
 
-##### ۴-۲. قابلیت اطمینان (Reliability)
+##### 4-2. Reliability (Reliability)
 
-| کد | نیازمندی | مقدار |
+| Code | Requirement | Value |
 |----|----------|-------|
-| NFR-06 | در دسترس بودن سیستم | ≥ ۹۹.۹٪ |
-| NFR-07 | MTBF سیستم | ≥ ۸,۷۶۰ ساعت |
-| NFR-08 | نرخ تشخیص صحیح عیب (Accuracy) | ≥ ۹۵٪ |
-| NFR-09 | نرخ هشدار اشتباه (False Alarm Rate) | < ۵٪ |
+| NFR-06 | System availability | ≥ 99.9% |
+| NFR-07 | System MTBF | ≥ 8,760 hours |
+| NFR-08 | Correct fault detection rate (Accuracy) | ≥ 95% |
+| NFR-09 | False alarm rate (False Alarm Rate) | < 5% |
 
-##### ۴-۳. امنیت (Security)
+##### 4-3. Security (Security)
 
-| کد | نیازمندی |
+| Code | Requirement |
 |----|----------|
-| NFR-10 | تمام ارتباطات باید با TLS 1.3 رمزگذاری شوند |
-| NFR-11 | سیستم باید از احراز هویت دو مرحله‌ای (2FA) پشتیبانی کند |
-| NFR-12 | دسترسی‌ها باید بر اساس نقش (RBAC) مدیریت شوند |
-| NFR-13 | تمام فعالیت‌های کاربر باید لاگ‌گذاری شوند |
-| NFR-14 | سیستم باید با استاندارد ISA/IEC 62443 مطابقت داشته باشد |
+| NFR-10 | All communications must be encrypted with TLS 1.3 |
+| NFR-11 | The system must support two-factor authentication (2FA) |
+| NFR-12 | Access must be managed based on roles (RBAC) |
+| NFR-13 | All user activities must be logged |
+| NFR-14 | The system must comply with the ISA/IEC 62443 standard |
 
-##### ۴-۴. مقیاس‌پذیری (Scalability)
+##### 4-4. Scalability (Scalability)
 
-| کد | نیازمندی |
+| Code | Requirement |
 |----|----------|
-| NFR-15 | سیستم باید قابلیت افزودن سنسورهای جدید تا ۲۰۰۰ عدد را داشته باشد |
-| NFR-16 | سیستم باید قابلیت افزودن تجهیزات جدید تا ۱۰۰۰ عدد را داشته باشد |
-| NFR-17 | سیستم باید از معماری microservices برای توسعه‌پذیری استفاده کند |
+| NFR-15 | The system must be able to add new sensors up to 2000 |
+| NFR-16 | The system must be able to add new equipment up to 1000 |
+| NFR-17 | The system must use a microservices architecture for extensibility |
 
-##### ۴-۵. قابلیت نگهداری (Maintainability)
+##### 4-5. Maintainability (Maintainability)
 
-| کد | نیازمندی |
+| Code | Requirement |
 |----|----------|
-| NFR-18 | سیستم باید دارای مستندات کامل فنی و کاربری باشد |
-| NFR-19 | کد منبع باید با استانداردهای clean code نوشته شود |
-| NFR-20 | سیستم باید قابلیت به‌روزرسانی بدون توقف (Zero-downtime) را داشته باشد |
+| NFR-18 | The system must have complete technical and user documentation |
+| NFR-19 | The source code must be written to clean code standards |
+| NFR-20 | The system must be able to be updated without downtime (Zero-downtime) |
 
 ---
 
-#### ۵. رابط‌های کاربری (User Interfaces)
+#### 5. User interfaces (User Interfaces)
 
-##### ۵-۱. داشبرد اصلی
+##### 5-1. Main dashboard
 
-صفحات اصلی داشبرد:
-1. **صفحه Overview**: نقشه حرارتی مجتمع با وضعیت تمام تجهیزات
-2. **صفحه تجهیزات**: جزئیات کامل هر تجهیز با نمودارهای ارتعاش و صوت
-3. **صفحه هشدارها**: لیست هشدارهای فعال با اولویت‌بندی
-4. **صفحه پیش‌بینی**: RUL تجهیزات و برنامه تعمیرات پیشنهادی
-5. **صفحه Auto Operation**: وضعیت اقدامات خودکار و لاگ عملیات
-6. **صفحه گزارش‌ها**: گزارش‌های تحلیلی و آماری
+Main dashboard pages:
+1. **Overview page**: complex heat map with the status of all equipment
+2. **Equipment page**: full details of each equipment with vibration and acoustic charts
+3. **Alerts page**: list of active alerts with prioritization
+4. **Prediction page**: equipment RUL and the proposed maintenance schedule
+5. **Auto Operation page**: status of automatic actions and operation log
+6. **Reports page**: analytical and statistical reports
 
-##### ۵-۲. نمایش کدهای رنگی
+##### 5-2. Color code display
 
-| رنگ | معنی در سطح تجهیز | معنی در سطح سنسور |
+| Color | Meaning at equipment level | Meaning at sensor level |
 |-----|-------------------|-------------------|
-| **سبز** | عملکرد عادی | سنسور سالم |
-| **زرد** | انحراف از شرایط بهینه | نیاز به کالیبراسیون |
-| **نارنجی** | نیاز به اقدام فوری | سنسور خراب |
+| **Green** | Normal operation | Healthy sensor |
+| **Yellow** | Deviation from optimal conditions | Needs calibration |
+| **Orange** | Needs immediate action | Faulty sensor |
 
 ---
 
-#### ۶. محدودیت‌های طراحی
+#### 6. Design constraints
 
-| کد | محدودیت |
+| Code | Constraint |
 |----|----------|
-| DC-01 | سیستم باید در محیط عملیاتی با دمای ۵- تا ۵۵ درجه سانتی‌گراد کار کند |
-| DC-02 | سیستم باید در محیط با رطوبت ۴-۱۰۰٪ کار کند |
-| DC-03 | تمام تجهیزات باید دارای گواهی ATEX/IECEx برای محیط‌های خطرناک باشند |
-| DC-04 | سیستم باید با DCS موجود مجتمع سازگار باشد |
-| DC-05 | مصرف برق کل سیستم نباید از ۵۰ kW تجاوز کند |
+| DC-01 | The system must operate in an operating environment with a temperature of -5 to 55 degrees Celsius |
+| DC-02 | The system must operate in an environment with 4-100% humidity |
+| DC-03 | All equipment must have ATEX/IECEx certification for hazardous environments |
+| DC-04 | The system must be compatible with the complex's existing DCS |
+| DC-05 | The total power consumption of the system must not exceed 50 kW |
 
 
-## ۱۰. داده‌های سنتتیک (Synthetic Data)
+## 10. Synthetic data (Synthetic Data)
 
-برای اطمینان از عملکرد صحیح داشبرد و آموزش مدل‌های AI، داده‌های سنتتیک زیر تولید می‌شود:
+To ensure the correct operation of the dashboard and to train AI models, the following synthetic data is generated:
 
-### ۱۰-۱. داده‌های ارتعاش سنتتیک
+### 10-1. Synthetic vibration data
 
 ```python
 import numpy as np
@@ -438,47 +438,47 @@ from datetime import datetime, timedelta
 
 def generate_vibration_data(equipment_id, duration_days=30, sample_rate=25600):
     """
-    تولید داده‌های ارتعاش سنتتیک برای یک تجهیز مشخص
+    Generate synthetic vibration data for a specific equipment
     """
     t = np.linspace(0, duration_days*24*3600, duration_days*24*3600*sample_rate)
     
-    # فرکانس‌های پایه (مشخصات تجهیز)
-    rpm = np.random.randint(1000, 6000)  # دور بر دقیقه
-    f0 = rpm / 60  # فرکانس پایه
+    # base frequencies (equipment specifications)
+    rpm = np.random.randint(1000, 6000)  # revolutions per minute
+    f0 = rpm / 60  # base frequency
     
-    # سیگنال پایه سالم
+    # healthy base signal
     signal = 0.5 * np.sin(2 * np.pi * f0 * t)
-    signal += 0.3 * np.sin(2 * np.pi * 2*f0 * t)  # هارمونیک دوم
-    signal += 0.15 * np.sin(2 * np.pi * 3*f0 * t)  # هارمونیک سوم
+    signal += 0.3 * np.sin(2 * np.pi * 2*f0 * t)  # second harmonic
+    signal += 0.15 * np.sin(2 * np.pi * 3*f0 * t)  # third harmonic
     
-    # نویز زمینه
+    # background noise
     noise = 0.05 * np.random.randn(len(t))
     signal += noise
     
-    # شبیه‌سازی خرابی‌های تدریجی
+    # simulating gradual failures
     fault_start = np.random.randint(5, duration_days-5)
     fault_type = np.random.choice(['unbalance', 'misalignment', 'bearing_fault', 'looseness'])
     
     if fault_type == 'unbalance':
-        # نابالانسی: افزایش دامنه در فرکانس پایه
+        # unbalance: increased amplitude at the base frequency
         for i in range(int(fault_start * 24*3600 * sample_rate), len(t)):
             progress = (i - int(fault_start * 24*3600 * sample_rate)) / (len(t) - int(fault_start * 24*3600 * sample_rate))
             signal[i] += 0.3 * progress * np.sin(2 * np.pi * f0 * t[i])
     
     elif fault_type == 'misalignment':
-        # ناهم‌محوری: افزایش هارمونیک دوم
+        # misalignment: increased second harmonic
         for i in range(int(fault_start * 24*3600 * sample_rate), len(t)):
             progress = (i - int(fault_start * 24*3600 * sample_rate)) / (len(t) - int(fault_start * 24*3600 * sample_rate))
             signal[i] += 0.2 * progress * np.sin(2 * np.pi * 2*f0 * t[i])
     
     elif fault_type == 'bearing_fault':
-        # عیب یاتاقان: فرکانس‌های بالا
+        # bearing fault: high frequencies
         bpfo = 0.4 * f0 * 8  # Ball Pass Frequency Outer
         for i in range(int(fault_start * 24*3600 * sample_rate), len(t)):
             progress = (i - int(fault_start * 24*3600 * sample_rate)) / (len(t) - int(fault_start * 24*3600 * sample_rate))
             signal[i] += 0.15 * progress * np.sin(2 * np.pi * bpfo * t[i])
     
-    # نمونه‌برداری برای ذخیره‌سازی (کاهش نرخ برای کاهش حجم)
+    # sampling for storage (reduce rate to reduce volume)
     downsample_factor = 100
     t_downsampled = t[::downsample_factor]
     signal_downsampled = signal[::downsample_factor]
@@ -497,35 +497,35 @@ def generate_vibration_data(equipment_id, duration_days=30, sample_rate=25600):
     return df
 ```
 
-### ۱۰-۲. داده‌های سلامت سنسور سنتتیک
+### 10-2. Synthetic sensor health data
 
 ```python
 def generate_sensor_health_data(num_sensors=800, duration_days=30):
     """
-    تولید داده‌های سلامت سنسورها با کدهای رنگی
+    Generate sensor health data with color codes
     """
     data = []
     for sensor_id in range(num_sensors):
-        # وضعیت اولیه: اکثر سنسورها سبز هستند
+        # initial state: most sensors are green
         initial_status = np.random.choice(['green', 'yellow', 'orange'], 
                                           p=[0.92, 0.06, 0.02])
         
         for day in range(duration_days):
-            # تغییر تدریجی وضعیت
+            # gradual state change
             if initial_status == 'green':
-                if np.random.random() < 0.01:  # 1% احتمال خرابی در روز
+                if np.random.random() < 0.01:  # 1% chance of failure per day
                     status = np.random.choice(['yellow', 'orange'], p=[0.6, 0.4])
                 else:
                     status = 'green'
             elif initial_status == 'yellow':
-                if np.random.random() < 0.05:  # 5% احتمال بهبود
+                if np.random.random() < 0.05:  # 5% chance of recovery
                     status = 'green'
-                elif np.random.random() < 0.1:  # 10% احتمال بدتر شدن
+                elif np.random.random() < 0.1:  # 10% chance of worsening
                     status = 'orange'
                 else:
                     status = 'yellow'
             else:  # orange
-                if np.random.random() < 0.02:  # 2% احتمال تعویض
+                if np.random.random() < 0.02:  # 2% chance of replacement
                     status = 'green'
                 else:
                     status = 'orange'
@@ -543,23 +543,23 @@ def generate_sensor_health_data(num_sensors=800, duration_days=30):
     return pd.DataFrame(data)
 ```
 
-### ۱۰-۳. داده‌های پیش‌بینی RUL سنتتیک
+### 10-3. Synthetic RUL prediction data
 
 ```python
 def generate_rul_data(equipment_id, fault_type, current_health):
     """
-    تولید داده‌های RUL (Remaining Useful Life) برای یک تجهیز
+    Generate RUL (Remaining Useful Life) data for an equipment
     """
-    # عمر مفید کل تجهیز (ساعت)
+    # total useful life of the equipment (hours)
     total_life = np.random.randint(20000, 80000)
     
-    # سن فعلی تجهیز (ساعت)
+    # current age of the equipment (hours)
     current_age = np.random.randint(1000, total_life - 1000)
     
-    # RUL واقعی
+    # actual RUL
     true_rul = total_life - current_age
     
-    # خطای پیش‌بینی (با افزایش سن، خطا بیشتر می‌شود)
+    # prediction error (error grows with age)
     prediction_error = np.random.normal(0, 0.05 * current_age / total_life)
     predicted_rul = true_rul * (1 + prediction_error)
     
@@ -575,12 +575,12 @@ def generate_rul_data(equipment_id, fault_type, current_health):
     }
 ```
 
-### ۱۰-۴. داده‌های عملیاتی Auto Operation
+### 10-4. Auto Operation operational data
 
 ```python
 def generate_auto_operation_logs(num_actions=1000):
     """
-    تولید لاگ عملیات خودکار Auto Operation
+    Generate the Auto Operation automatic action log
     """
     actions = []
     for i in range(num_actions):
@@ -608,78 +608,78 @@ def generate_auto_operation_logs(num_actions=1000):
     return pd.DataFrame(actions)
 ```
 
-### ۱۰-۵. تعداد داده‌های سنتتیک موردنیاز
+### 10-5. Required number of synthetic data points
 
-| نوع داده | تعداد رکورد | حجم تقریبی |
+| Data type | Record count | Approximate size |
 |----------|-------------|------------|
-| داده‌های ارتعاش (۳۰ روز × ۸۰۰ سنسور) | ~۶۰ میلیون | ~۵۰ GB |
-| داده‌های صوت (۳۰ روز × ۱۳۰ سنسور) | ~۱۰ میلیون | ~۱۰ GB |
-| داده‌های سلامت سنسور (۸۰۰ سنسور × ۳۰ روز) | ۲۴,۰۰۰ | ~۵ MB |
-| داده‌های RUL (۵۰۰ تجهیز × ۳۰ روز) | ۱۵,۰۰۰ | ~۳ MB |
-| داده‌های Auto Operation | ۱,۰۰۰ | ~۱ MB |
-| داده‌های فرآیندی (۱۰۰۰ نقطه × ۳۰ روز) | ~۲.۶ میلیون | ~۲۰۰ MB |
-| **مجموع** | **~۷۳ میلیون** | **~۶۰ GB** |
+| Vibration data (30 days × 800 sensors) | ~60 million | ~50 GB |
+| Acoustic data (30 days × 130 sensors) | ~10 million | ~10 GB |
+| Sensor health data (800 sensors × 30 days) | 24,000 | ~5 MB |
+| RUL data (500 equipment × 30 days) | 15,000 | ~3 MB |
+| Auto Operation data | 1,000 | ~1 MB |
+| Process data (1000 points × 30 days) | ~2.6 million | ~200 MB |
+| **Total** | **~73 million** | **~60 GB** |
 
-### ۱۰-۶. معیارهای تایید داشبرد
+### 10-6. Dashboard validation criteria
 
-برای اطمینان از دقت و اتکاپذیری داشبرد، معیارهای زیر تعریف می‌شوند:
+To ensure the accuracy and reliability of the dashboard, the following criteria are defined:
 
-| معیار | مقدار هدف | روش تایید |
+| Criterion | Target value | Verification method |
 |-------|-----------|-----------|
-| دقت تشخیص عیب | ≥ ۹۵٪ | مقایسه با داده‌های واقعی و تست میدانی |
-| نرخ هشدار اشتباه | < ۵٪ | پایش و ثبت هشدارهای بی‌دلیل |
-| دقت پیش‌بینی RUL | ±۵٪ | مقایسه با عمر واقعی پس از تعویض |
-| زمان پاسخ‌گویی | < ۲ ثانیه | تست بار و استرس |
-| در دسترس بودن | ≥ ۹۹.۹٪ | پایش uptime سیستم |
-| دقت تشخیص موقعیت سنسور | ±۱ متر | تست GPS/مکانیابی |
-| دقت تصاویر حرارتی | ±۲ درجه سانتی‌گراد | کالیبراسیون با دماسنج مرجع |
-| دقت آنالیز صوتی | ≥ ۹۰٪ | مقایسه با آنالیز دستی |
+| Fault detection accuracy | ≥ 95% | Comparison with real data and field test |
+| False alarm rate | < 5% | Monitoring and logging of unwarranted alerts |
+| RUL prediction accuracy | ±5% | Comparison with actual life after replacement |
+| Response time | < 2 seconds | Load and stress test |
+| Availability | ≥ 99.9% | System uptime monitoring |
+| Sensor location accuracy | ±1 meter | GPS/localization test |
+| Thermal image accuracy | ±2 degrees Celsius | Calibration with a reference thermometer |
+| Acoustic analysis accuracy | ≥ 90% | Comparison with manual analysis |
 
 ---
 
-## ۱۱. جمع‌بندی و نتیجه‌گیری
+## 11. Summary and conclusion
 
-سیستم پیشنهادی داشبرد هوشمند CBM برای پتروشیمی آبادان با ویژگی‌های زیر طراحی شده است:
+The proposed smart CBM dashboard system for Abadan Petrochemical is designed with the following features:
 
-1. **پوشش کامل تجهیزات**: بیش از ۵۰۰ تجهیز دوار و ۸۰۰ سنسور
-2. **آنالیز ترکیبی ارتعاش و صوت**: رویکردی منحصربه‌فرد نسبت به رقبا
-3. **پایش سلامت سنسورها**: با کدهای رنگی سبز، زرد و نارنجی
-4. **Auto Operation**: سیستم هوشمند با قابلیت اقدام خودکار
-5. **پوشش تصویری کامل**: ۴۰+ دوربین هوشمند و حرارتی
-6. **دقت بالا**: تشخیص عیب با دقت ≥ ۹۵٪ و نرخ هشدار اشتباه < ۵٪
-7. **مطابقت با استانداردهای جهانی**: ISO 17359, ISO 14224, ISA/IEC 62443
+1. **Full equipment coverage**: more than 500 rotating equipment and 800 sensors
+2. **Combined vibration and acoustic analysis**: a unique approach compared to competitors
+3. **Sensor health monitoring**: with green, yellow and orange color codes
+4. **Auto Operation**: an intelligent system with automatic action capability
+5. **Full visual coverage**: 40+ smart and thermal cameras
+6. **High accuracy**: fault detection with accuracy ≥ 95% and false alarm rate < 5%
+7. **Compliance with global standards**: ISO 17359, ISO 14224, ISA/IEC 62443
 
-این سیستم با الهام از بهترین نمونه‌های جهانی مانند **ABB Ability**، **Honeywell Forge** و **AVEVA Digital Twin** طراحی شده و با اضافه کردن قابلیت‌های منحصربه‌فرد مانند **آنالیز صوتی**، **پایش سلامت سنسورها** و **سیستم Auto Operation کامل**، از نمونه‌های موجود پیشی می‌گیرد.
+This system is designed inspired by the best global examples such as **ABB Ability**, **Honeywell Forge** and **AVEVA Digital Twin**, and by adding unique capabilities such as **acoustic analysis**, **sensor health monitoring** and **a complete Auto Operation system**, it surpasses existing examples.
 
 
 ---
 
-## ۱۲. پیاده‌سازی (Skeleton)
+## 12. Implementation (Skeleton)
 
-اسکلت اجرایی این سامانه در همین مخزن پیاده‌سازی شده است. ساختار کامل، نگاشت
-نیازمندی‌ها به کد و راهنمای اجرا در [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md)
-و پوشه‌ی [`docs/`](docs/) آمده است.
+The executable skeleton of this system is implemented in this same repository. The complete structure, mapping of
+requirements to code, and the run guide are in [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md)
+and the [`docs/`](docs/) folder.
 
-خلاصه:
+Summary:
 
-| بخش | مسیر | فناوری |
+| Section | Path | Technology |
 |---|---|---|
-| میکروسرویس‌های بک‌اند | [`services/`](services/) | Python ۳٫۱۱ + FastAPI |
-| موتور و مدل‌های AI | [`ml/`](ml/) | NumPy/SciPy + scikit-learn (جایگزین CNN+LSTM با همان رابط) |
-| داشبرد | [`apps/dashboard/`](apps/dashboard/) | React + Vite + TypeScript (RTL) |
-| زیرساخت توسعه | [`docker-compose.yml`](docker-compose.yml) | PostgreSQL, InfluxDB, Kafka, MQTT, Grafana, MinIO |
+| Backend microservices | [`services/`](services/) | Python 3.11 + FastAPI |
+| AI engine and models | [`ml/`](ml/) | NumPy/SciPy + scikit-learn (replaces CNN+LSTM with the same interface) |
+| Dashboard | [`apps/dashboard/`](apps/dashboard/) | React + Vite + TypeScript (RTL) |
+| Development infrastructure | [`docker-compose.yml`](docker-compose.yml) | PostgreSQL, InfluxDB, Kafka, MQTT, Grafana, MinIO |
 
-سرویس‌های اصلی: `asset-registry` (سلسله‌مراتب دارایی و نگاشت کامل تجهیز↔سنسور↔دوربین)،
-`data-acquisition` (شبیه‌ساز فیزیکی مجتمع + پل MQTT)، `signal-processing` (FFT/Wavelet،
-استخراج ویژگی)، `ai-engine` (تشخیص ۱۶ عیب)، `prediction-rul` (RUL و هشدار ۷۲ ساعته)،
-`sensor-health` (سه‌چراغ سبز/زرد/قرمز + واحد اندازه‌گیری)، `auto-operation` (اوپراتور
-هوشمند ۵ سطحی + کنترل روشن/خاموش و تعویض زاپاس با بهینه‌سازی برخط)، `economics` (سود و
-صرفه‌جویی لحظه‌ای به دلار برای مدیر)، `alerting`، `reporting`، و `api-gateway`.
+Main services: `asset-registry` (asset hierarchy and full equipment↔sensor↔camera mapping),
+`data-acquisition` (physical simulator of the complex + MQTT bridge), `signal-processing` (FFT/Wavelet,
+feature extraction), `ai-engine` (detection of 16 faults), `prediction-rul` (RUL and 72-hour alert),
+`sensor-health` (three-light green/yellow/red + measurement unit), `auto-operation` (5-level smart
+operator + on/off control and standby swap with online optimization), `economics` (instantaneous profit and
+savings in dollars for the manager), `alerting`, `reporting`, and `api-gateway`.
 
 ```bash
 cp .env.example .env
-make up        # بالا آوردن کل پشته
-make train     # آموزش مدل تشخیص عیب و تخمین‌گر RUL روی داده‌ی سنتتیک
-make seed      # تولید و بارگذاری داده‌ی سنتتیک (بخش ۱۰)
-make dashboard # اجرای فرانت‌اند روی http://localhost:5173
+make up        # bring up the whole stack
+make train     # train the fault detection model and RUL estimator on synthetic data
+make seed      # generate and load synthetic data (section 10)
+make dashboard # run the frontend on http://localhost:5173
 ```

@@ -1,1 +1,1 @@
-"""مهندسی ویژگی مشترک بین سرویس signal-processing، ai-engine و آموزش مدل."""
+"""Feature engineering shared between the signal-processing service, ai-engine and model training."""

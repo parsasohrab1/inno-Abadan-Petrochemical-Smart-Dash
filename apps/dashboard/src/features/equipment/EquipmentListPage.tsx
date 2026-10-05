@@ -21,14 +21,14 @@ export function EquipmentListPage() {
   return (
     <div className="card">
       <div className="row" style={{ marginBottom: 12 }}>
-        <h3 style={{ margin: 0 }}>تجهیزات ({rows.length})</h3>
-        <input placeholder="جستجو بر اساس تگ / نام / واحد" value={q} onChange={(e) => setQ(e.target.value)} />
+        <h3 style={{ margin: 0 }}>Equipment ({rows.length})</h3>
+        <input placeholder="Search by tag / name / unit" value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
       <table>
         <thead>
           <tr>
-            <th>تگ</th><th>نام</th><th>نوع</th><th>واحد/خط</th>
-            <th>شاخص سلامت</th><th>وضعیت</th><th>کارکرد</th><th>زاپاس</th>
+            <th>Tag</th><th>Name</th><th>Type</th><th>Unit/Line</th>
+            <th>Health index</th><th>Status</th><th>Run state</th><th>Spare</th>
           </tr>
         </thead>
         <tbody>
@@ -41,7 +41,7 @@ export function EquipmentListPage() {
               <td>{e.health_score}</td>
               <td><Badge color={e.color as Color}>{e.color}</Badge></td>
               <td>{e.run_state}</td>
-              <td>{e.has_spare ? "دارد" : "—"}</td>
+              <td>{e.has_spare ? "Yes" : "—"}</td>
             </tr>
           ))}
         </tbody>

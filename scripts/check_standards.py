@@ -1,6 +1,6 @@
-"""بررسی پوشش نگاشت نیازمندی ↔ کد (ISO 17359 / 14224 / 13374, FR/NFR).
+"""Check the coverage of the requirement ↔ code mapping (ISO 17359 / 14224 / 13374, FR/NFR).
 
-خروجی: جدول نیازمندی‌های SRS و ماژول متناظر. برای CI و مرور مهندسی.
+Output: a table of SRS requirements and the corresponding module. For CI and engineering review.
 """
 from __future__ import annotations
 

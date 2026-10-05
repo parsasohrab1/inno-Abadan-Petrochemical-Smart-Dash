@@ -1,7 +1,7 @@
-"""کانال‌های اعلان — ایمیل (SMTP)، پیامک (وب‌سرویس)، درون‌برنامه‌ای (Kafka→WebSocket).
+"""Notification channels — email (SMTP), SMS (web service), in-app (Kafka→WebSocket).
 
-در نبود پیکربندی SMTP/SMS، پیام فقط لاگ می‌شود (حالت توسعه). رابط برای اتصال به
-درگاه واقعی پیامک ایران (کاوه‌نگار/قاصدک) آماده است.
+Without SMTP/SMS configuration, the message is only logged (development mode). The interface is ready for connecting to
+a real Iranian SMS gateway (Kavenegar/Ghasedak).
 """
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ def send_sms(text: str) -> bool:
 
 def dispatch(severity: str, title: str, description: str) -> dict:
     used = channels_for(severity)
-    body = f"{title}\n\n{description}\n\n— داشبرد هوشمند CBM پتروشیمی آبادان"
+    body = f"{title}\n\n{description}\n\n— Abadan Petrochemical CBM Smart Dashboard"
     return {
         "email": send_email(title, body) if "email" in used else None,
         "sms": send_sms(f"{title} — {description}") if "sms" in used else None,

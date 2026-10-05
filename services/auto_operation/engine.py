@@ -1,8 +1,8 @@
-"""موتور تصمیم Auto Operation — README §۶-۲ (۵ سطح) و §۶-۳ (اقدامات).
+"""Auto Operation decision engine — README §6-2 (5 levels) and §6-3 (actions).
 
-جریان: analytics.diagnosis + analytics.rul  →  ارزیابی  →  اقدام پیشنهادی/خودکار.
-بهینه‌سازی برخط: انتخاب بین «ادامه با کاهش بار»، «تعویض به زاپاس» و «توقف» بر مبنای
-تحلیل هزینه-فایده‌ی لحظه‌ای.
+Flow: analytics.diagnosis + analytics.rul  →  evaluation  →  proposed/automatic action.
+Online optimization: choosing between "continue with reduced load", "switch to standby" and "stop" based on
+instantaneous cost-benefit analysis.
 """
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ log = get_logger("auto-operation.engine")
 _settings = get_settings()
 _price_book = load_price_book()
 
-# اقداماتی که در صورت تنظیم سراسری، همیشه تأیید انسانی می‌خواهند (FR-17)
+# actions that, if configured globally, always require human approval (FR-17)
 _HITL_ACTIONS = {
     AutoActionType.EQUIPMENT_STOP,
     AutoActionType.EQUIPMENT_START,
@@ -100,7 +100,7 @@ class DecisionEngine:
             line_product = self._line_product(s, eq)
             rated_kw = eq.rated_power_kw or 75.0
 
-            # تکرار اقدام باز برای همین تجهیز را نساز
+            # do not create a repeated open action for the same equipment
             existing = s.exec(
                 select(AutoAction).where(
                     AutoAction.equipment_tag == tag,
@@ -114,26 +114,26 @@ class DecisionEngine:
         lead = _settings.rul_alert_lead_time_hours
         actions: list[tuple[AutoActionType, int, str, dict, float]] = []
 
-        # ---- سطح ۴: توصیه (کاهش بار / زمان‌بندی تعمیر) ----
+        # ---- Level 4: recommendation (load reduction / maintenance scheduling) ----
         if 0.25 <= severity < 0.55 and rul.rul_hours > lead:
             actions.append((
                 AutoActionType.PARAMETER_ADJUSTMENT, 4,
-                f"کاهش ۱۵٪ بار برای مهار رشد عیب «{fault}» (شدت {severity:.2f})",
+                f"15% load reduction to contain the growth of fault '{fault}' (severity {severity:.2f})",
                 {"parameter": "load_setpoint", "delta_pct": -15}, 0.0,
             ))
             actions.append((
                 AutoActionType.MAINTENANCE_SCHEDULING, 4,
-                f"زمان‌بندی تعمیر برنامه‌ریزی‌شده در پنجره‌ی RUL≈{rul.rul_hours:.0f}h",
+                f"Schedule planned maintenance within the RUL window ≈{rul.rul_hours:.0f}h",
                 {"window_hours": rul.rul_hours}, planned_repair_saving(
                     _price_book["catastrophic_failure_cost_usd"].get(etype, 60000.0) * 0.3, _price_book),
             ))
             actions.append((
                 AutoActionType.SPARE_PART_ORDER, 3,
-                f"سفارش قطعات یدکی متناظر با عیب «{fault}»",
+                f"Order spare parts corresponding to fault '{fault}'",
                 {"fault": fault}, 0.0,
             ))
 
-        # ---- سطح ۵: اقدام (تعویض زاپاس / توقف) ----
+        # ---- Level 5: action (standby changeover / stop) ----
         urgent = severity >= 0.6 or rul.rul_hours <= lead
         very_urgent = severity >= 0.8 or rul.rul_hours <= lead / 3
 
@@ -146,32 +146,32 @@ class DecisionEngine:
             if has_spare:
                 actions.append((
                     AutoActionType.SPARE_CHANGEOVER, 5,
-                    (f"تعویض خودکار به زاپاس: روشن‌کردن زاپاس و خاموش‌کردن {tag} "
-                     f"(شدت {severity:.2f}، RUL≈{rul.rul_hours:.0f}h). "
-                     f"صرفه‌جویی برآوردی ${total_save:,.0f}."),
+                    (f"Automatic changeover to standby: start the standby and shut down {tag} "
+                     f"(severity {severity:.2f}, RUL≈{rul.rul_hours:.0f}h). "
+                     f"Estimated savings ${total_save:,.0f}."),
                     {"strategy": "start_spare_then_stop_main"}, total_save,
                 ))
             elif crit in {Criticality.SAFETY_CRITICAL} and very_urgent:
                 actions.append((
                     AutoActionType.EQUIPMENT_STOP, 5,
-                    (f"توقف کنترل‌شده‌ی {tag} — تجهیز ایمنی‌بحرانی بدون زاپاس، "
-                     f"RUL≈{rul.rul_hours:.0f}h. جلوگیری از خرابی فاجعه‌بار."),
+                    (f"Controlled stop of {tag} — safety-critical equipment without a standby, "
+                     f"RUL≈{rul.rul_hours:.0f}h. Preventing a catastrophic failure."),
                     {"emergency": very_urgent and rul.rul_hours <= lead / 6}, save_catastrophic,
                 ))
                 actions.append((
                     AutoActionType.MAINTENANCE_REQUEST, 5,
-                    "درخواست تعمیر فوری پس از توقف", {"priority": "immediate"}, 0.0,
+                    "Urgent maintenance request after the stop", {"priority": "immediate"}, 0.0,
                 ))
             else:
                 actions.append((
                     AutoActionType.MAINTENANCE_REQUEST, 5,
-                    (f"درخواست تعمیر با اولویت بالا برای {tag} (بدون زاپاس، "
-                     f"کاهش بار تا حد ممکن)."),
+                    (f"High-priority maintenance request for {tag} (no standby, "
+                     f"load reduced as much as possible)."),
                     {"priority": "high"}, planned_repair_saving(save_catastrophic, _price_book),
                 ))
                 actions.append((
                     AutoActionType.PARAMETER_ADJUSTMENT, 4,
-                    "کاهش ۳۰٪ بار تا زمان تعمیر", {"parameter": "load_setpoint", "delta_pct": -30}, 0.0,
+                    "30% load reduction until maintenance", {"parameter": "load_setpoint", "delta_pct": -30}, 0.0,
                 ))
 
         for atype, level, rationale, params, savings in actions:
@@ -227,7 +227,7 @@ class DecisionEngine:
         with session_scope() as s:
             action = s.get(AutoAction, action_id)
             if not action or action.status not in {ActionStatus.APPROVED, ActionStatus.AWAITING_APPROVAL}:
-                return {"error": "اقدام قابل اجرا نیست", "status": action.status if action else None}
+                return {"error": "The action cannot be executed", "status": action.status if action else None}
             action.status = ActionStatus.EXECUTING
             s.add(action)
             atype = AutoActionType(action.action_type)

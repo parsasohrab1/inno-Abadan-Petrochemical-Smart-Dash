@@ -1,4 +1,4 @@
-"""آموزش تخمین‌گر RUL روی داده‌ی سنتتیک روند عیب (FR-11: دقت ±۵٪ هدف)."""
+"""Train the RUL estimator on synthetic fault-trend data (FR-11: ±5% accuracy target)."""
 from __future__ import annotations
 
 import numpy as np

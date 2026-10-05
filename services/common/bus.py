@@ -1,7 +1,7 @@
-"""باس رویداد مبتنی بر Kafka (aiokafka) با مدیریت خطای مقاوم.
+"""Kafka-based event bus (aiokafka) with resilient error handling.
 
-اگر بروکر در دسترس نباشد، تولیدکننده رویدادها را در صف داخلی نگه می‌دارد و
-دوباره تلاش می‌کند؛ سرویس متوقف نمی‌شود (کمک به NFR-06 در دسترس‌بودن).
+If the broker is unavailable, the producer keeps events in an internal queue and
+retries; the service does not stop (helps NFR-06 availability).
 """
 from __future__ import annotations
 
@@ -77,7 +77,7 @@ async def consume(
     *,
     from_beginning: bool = False,
 ) -> None:
-    """حلقه‌ی مصرف پایدار — با قطع بروکر دوباره تلاش می‌کند."""
+    """Persistent consume loop — retries when the broker disconnects."""
     while True:
         consumer = AIOKafkaConsumer(
             *topics,

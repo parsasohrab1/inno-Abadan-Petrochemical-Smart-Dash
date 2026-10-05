@@ -1,8 +1,8 @@
-"""مدل‌های پایگاه‌داده (SQLModel) — سلسله‌مراتب دارایی و رکوردهای عملیاتی.
+"""Database models (SQLModel) — asset hierarchy and operational records.
 
-سلسله‌مراتب: Plant → Unit → ProductionLine → Equipment → Component
-هر Equipment و ProductionLine از طریق SensorMount / CameraCoverage به سنسور و دوربین متصل است
-(الزام کاربر: «تمامی تجهیزات و خط تولید زیر سنسور و دوربین مرتبط باشند»).
+Hierarchy: Plant → Unit → ProductionLine → Equipment → Component
+Each Equipment and ProductionLine is connected to sensors and cameras via SensorMount / CameraCoverage
+(user requirement: "all equipment and production lines must be covered by related sensors and cameras").
 """
 from __future__ import annotations
 
@@ -31,8 +31,8 @@ def _now() -> datetime:
 # --------------------------------------------------------------------------- assets
 class Plant(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = "پتروشیمی آبادان"
-    location: str = "کوی مطهری، آبادان"
+    name: str = "Abadan Petrochemical"
+    location: str = "Motahari district, Abadan"
     design_temp_c: float = 49.0
     abs_max_temp_c: float = 55.0
     min_temp_c: float = -5.0
@@ -57,7 +57,7 @@ class ProductionLine(SQLModel, table=True):
     code: str = Field(index=True)
     title: str
     product: str | None = None            # PVC | Caustic | DDB | Tetramer | EDC | VCM
-    design_rate_tph: float | None = None  # ظرفیت طراحی (تن بر ساعت)
+    design_rate_tph: float | None = None  # design capacity (tons per hour)
     unit: Unit | None = Relationship(back_populates="lines")
     equipment: list["Equipment"] = Relationship(back_populates="line")
     camera_coverages: list["CameraCoverage"] = Relationship(back_populates="line")
@@ -66,7 +66,7 @@ class ProductionLine(SQLModel, table=True):
 class Equipment(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     line_id: int = Field(foreign_key="productionline.id", index=True)
-    tag: str = Field(index=True, unique=True)   # نشانه‌ی KKS/ISA مثل P-1201
+    tag: str = Field(index=True, unique=True)   # KKS/ISA tag such as P-1201
     name: str
     etype: EquipmentType
     manufacturer: str | None = None
@@ -98,7 +98,7 @@ class Sensor(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     tag: str = Field(index=True, unique=True)
     kind: SensorKind
-    unit_of_measure: str                  # واحد اندازه‌گیری — همیشه در داشبرد نمایش داده می‌شود
+    unit_of_measure: str                  # unit of measure — always shown in the dashboard
     range_min: float = 0.0
     range_max: float = 100.0
     sample_rate_hz: float = 1.0
@@ -123,10 +123,10 @@ class Camera(SQLModel, table=True):
 
 
 class SensorMount(SQLModel, table=True):
-    """نگاشت سنسور ↔ تجهیز/جزء (چند‌به‌چند).
+    """Sensor ↔ equipment/component mapping (many-to-many).
 
-    اگر سنسور در سطح واحد/خط باشد (گازسنج، فلومتر خط) `equipment_id` خالی است و
-    `unit_id`/`line_id` مقدار می‌گیرد.
+    If the sensor is at unit/line level (gas detector, line flow meter) `equipment_id` is empty and
+    `unit_id`/`line_id` get a value.
     """
 
     id: int | None = Field(default=None, primary_key=True)
@@ -142,7 +142,7 @@ class SensorMount(SQLModel, table=True):
 
 
 class CameraCoverage(SQLModel, table=True):
-    """نگاشت دوربین ↔ واحد/خط/تجهیز."""
+    """Camera ↔ unit/line/equipment mapping."""
 
     id: int | None = Field(default=None, primary_key=True)
     camera_id: int = Field(foreign_key="camera.id", index=True)
@@ -165,11 +165,11 @@ class MaintenanceRecord(SQLModel, table=True):
     inspector: str | None = None
     cost_usd: float = 0.0
     downtime_hours: float = 0.0
-    source_action_id: int | None = None   # اگر از Auto Operation آمده باشد
+    source_action_id: int | None = None   # if it came from Auto Operation
 
 
 class DeviceHealthSnapshot(SQLModel, table=True):
-    """آخرین ارزیابی ۶ پارامتری سلامت سنسور/دوربین (README §۵-۲)."""
+    """Latest 6-parameter health assessment of a sensor/camera (README §5-2)."""
 
     id: int | None = Field(default=None, primary_key=True)
     device_tag: str = Field(index=True)
@@ -182,7 +182,7 @@ class DeviceHealthSnapshot(SQLModel, table=True):
     calibration_drift_pct: float | None = None
     comm_latency_ms: float | None = None
     device_temp_c: float | None = None
-    reasons: str | None = None            # توضیح علت رنگ
+    reasons: str | None = None            # explanation of the color cause
 
 
 class Diagnosis(SQLModel, table=True):
@@ -190,8 +190,8 @@ class Diagnosis(SQLModel, table=True):
     equipment_tag: str = Field(index=True)
     ts: datetime = Field(default_factory=_now, index=True)
     fault_type: FaultType = FaultType.NORMAL
-    severity: float = 0.0                 # ۰..۱
-    confidence: float = 0.0               # ۰..۱
+    severity: float = 0.0                 # 0..1
+    confidence: float = 0.0               # 0..1
     features_json: str | None = None
     model_version: str = "v0"
 
@@ -223,15 +223,15 @@ class Alert(SQLModel, table=True):
 
 
 class AutoAction(SQLModel, table=True):
-    """اقدام Auto Operation (README §۶) — شامل روشن/خاموش و تعویض زاپاس."""
+    """Auto Operation action (README §6) — including on/off and standby changeover."""
 
     id: int | None = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=_now, index=True)
     action_type: AutoActionType
     equipment_tag: str | None = Field(default=None, index=True)
-    target_tag: str | None = None         # تجهیز زاپاس/مقصد در صورت تعویض
+    target_tag: str | None = None         # standby/target equipment in case of changeover
     status: ActionStatus = ActionStatus.PROPOSED
-    level: int = 4                        # سطح ۱..۵ (README §۶-۲)
+    level: int = 4                        # level 1..5 (README §6-2)
     rationale: str | None = None
     parameters_json: str | None = None
     requires_human_approval: bool = True
@@ -244,7 +244,7 @@ class AutoAction(SQLModel, table=True):
 
 
 class EquipmentStateChange(SQLModel, table=True):
-    """تاریخچه‌ی تغییر وضعیت روشن/خاموش تجهیز."""
+    """History of equipment on/off state changes."""
 
     id: int | None = Field(default=None, primary_key=True)
     ts: datetime = Field(default_factory=_now, index=True)
@@ -257,7 +257,7 @@ class EquipmentStateChange(SQLModel, table=True):
 
 
 class EconomicsSnapshot(SQLModel, table=True):
-    """عکس لحظه‌ای سود و صرفه‌جویی به دلار برای داشبرد مدیریتی (الزام کاربر)."""
+    """Instantaneous snapshot of profit and savings in dollars for the management dashboard (user requirement)."""
 
     id: int | None = Field(default=None, primary_key=True)
     ts: datetime = Field(default_factory=_now, index=True)
@@ -270,7 +270,7 @@ class EconomicsSnapshot(SQLModel, table=True):
 
 
 class Report(SQLModel, table=True):
-    """گزارش تحلیلی تولیدشده (FR-19) — روزانه/هفتگی/ماهانه/هزینه-فایده."""
+    """Generated analytical report (FR-19) — daily/weekly/monthly/cost-benefit."""
 
     id: int | None = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=_now, index=True)
@@ -279,7 +279,7 @@ class Report(SQLModel, table=True):
     period_end: datetime
     title: str
     summary: str | None = None
-    payload_json: str | None = None       # داده‌ی کامل گزارش
+    payload_json: str | None = None       # full report data
     format: str = "json"
 
 
@@ -294,7 +294,7 @@ class User(SQLModel, table=True):
 
 
 class AuditLog(SQLModel, table=True):
-    """ثبت کامل فعالیت کاربر (NFR-13)."""
+    """Complete record of user activity (NFR-13)."""
 
     id: int | None = Field(default=None, primary_key=True)
     ts: datetime = Field(default_factory=_now, index=True)

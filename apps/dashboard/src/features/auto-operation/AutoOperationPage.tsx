@@ -3,7 +3,7 @@ import { api, currentRole } from "../../lib/api";
 import { StatCard, usd } from "../../components/common";
 import { useLiveFeed } from "../../lib/useLiveFeed";
 
-const LEVEL_FA = ["", "پایش", "تحلیل", "هشدار", "توصیه", "اقدام"];
+const LEVEL_FA = ["", "Monitoring", "Analysis", "Alert", "Recommendation", "Action"];
 
 export function AutoOperationPage() {
   const qc = useQueryClient();
@@ -40,20 +40,20 @@ export function AutoOperationPage() {
   return (
     <div className="grid" style={{ gap: 16 }}>
       <div className="grid cols-4">
-        <StatCard title="حالت سیستم" value={stats.data?.mode ?? "…"} />
-        <StatCard title="کل اقدامات" value={stats.data?.total_actions ?? "…"} />
-        <StatCard title="در انتظار تأیید" value={pending.length} />
-        <StatCard title="صرفه‌جویی محقق‌شده" value={usd(stats.data?.realized_savings_usd)} />
+        <StatCard title="System mode" value={stats.data?.mode ?? "…"} />
+        <StatCard title="Total actions" value={stats.data?.total_actions ?? "…"} />
+        <StatCard title="Pending approval" value={pending.length} />
+        <StatCard title="Realized savings" value={usd(stats.data?.realized_savings_usd)} />
       </div>
 
       <div className="card">
-        <h3>اقدامات در انتظار تأیید انسانی (Human-in-the-loop — FR-17)</h3>
-        {pending.length === 0 && <div className="muted">موردی در انتظار نیست.</div>}
+        <h3>Actions awaiting human approval (Human-in-the-loop — FR-17)</h3>
+        {pending.length === 0 && <div className="muted">Nothing is pending.</div>}
         <table>
           <tbody>
             {pending.map((a: any) => (
               <tr key={a.id}>
-                <td>سطح {a.level} · {LEVEL_FA[a.level]}</td>
+                <td>Level {a.level} · {LEVEL_FA[a.level]}</td>
                 <td><b>{a.action_type}</b></td>
                 <td>{a.equipment_tag}</td>
                 <td>{a.rationale}</td>
@@ -62,10 +62,10 @@ export function AutoOperationPage() {
                   {canApprove && (
                     <div className="row">
                       <button className="ok" onClick={() => decide.mutate({ id: a.id, decision: "approve" })}>
-                        تأیید و اجرا
+                        Approve and execute
                       </button>
                       <button className="danger" onClick={() => decide.mutate({ id: a.id, decision: "reject" })}>
-                        رد
+                        Reject
                       </button>
                     </div>
                   )}
@@ -77,10 +77,10 @@ export function AutoOperationPage() {
       </div>
 
       <div className="card">
-        <h3>لاگ اقدامات خودکار</h3>
+        <h3>Automatic action log</h3>
         <table>
           <thead>
-            <tr><th>زمان</th><th>سطح</th><th>نوع</th><th>تجهیز</th><th>وضعیت</th><th>صرفه‌جویی</th><th>دلیل</th></tr>
+            <tr><th>Time</th><th>Level</th><th>Type</th><th>Equipment</th><th>Status</th><th>Savings</th><th>Reason</th></tr>
           </thead>
           <tbody>
             {history.slice(0, 100).map((a: any) => (

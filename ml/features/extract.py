@@ -1,12 +1,12 @@
-"""استخراج ویژگی از قاب سیگنال ارتعاش/صوت (FR-06، FR-07).
+"""Feature extraction from a vibration/acoustic signal frame (FR-06, FR-07).
 
-- FFT با پنجره‌ی Hann (FR-06)
-- ویژگی‌های آماری زمانی: RMS, Peak, Crest, Kurtosis, Skewness, Shape/Clearance (FR-07)
-- دامنه در مضارب فرکانس چرخش (0.33X..10X) و انرژی باندی ریز برای تفکیک رزونانس یاتاقان
-- تحلیل پاکت (envelope spectrum): قله در BPFO/BPFI/BSF/FTF و نوارهای کناری — کلید
-  تفکیک چهار عیب یاتاقان از یکدیگر و از سایر عیوب
-- شاخص‌های اختصاصی: فرکانس شبکه (۵۰/۱۰۰ Hz)، تخت‌بودن طیفی (کاویتاسیون)،
-  تیزی باند میانی (تشدید)، سری هارمونیک تسمه، تن چرخش روغن، فرکانس درگیری دنده
+- FFT with a Hann window (FR-06)
+- Time-domain statistical features: RMS, Peak, Crest, Kurtosis, Skewness, Shape/Clearance (FR-07)
+- Amplitude at multiples of the rotation frequency (0.33X..10X) and fine band energy to separate bearing resonance
+- Envelope analysis (envelope spectrum): peak at BPFO/BPFI/BSF/FTF and sidebands — the key to
+  separating the four bearing faults from each other and from other faults
+- Dedicated indicators: line frequency (50/100 Hz), spectral flatness (cavitation),
+  mid-band sharpness (resonance), belt harmonic series, oil whirl tone, gear mesh frequency
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from services.common.domain.faults import (
 
 ORDERS = [0.33, 0.42, 0.5, 0.84, 1.0, 1.26, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0, 8.0, 10.0]
 
-# باندهای ریز (Hz) برای تفکیک فرکانس رزونانس حامل عیوب یاتاقان و تشدید
+# fine bands (Hz) to separate the bearing-fault carrier resonance frequency and resonance
 BANDS: dict[str, tuple[float, float]] = {
     "be_0_500": (0, 500),
     "be_500_1500": (500, 1500),
@@ -52,7 +52,7 @@ def _peak_near(freqs: np.ndarray, spec: np.ndarray, target_hz: float, tol_hz: fl
 
 
 def envelope_spectrum(x: np.ndarray, fs: float) -> tuple[np.ndarray, np.ndarray]:
-    """طیف پاکت: FFT از قدرمطلق تبدیل هیلبرت سیگنال (تحلیل استاندارد عیب یاتاقان)."""
+    """Envelope spectrum: FFT of the absolute value of the signal's Hilbert transform (standard bearing-fault analysis)."""
     env = np.abs(hilbert(x - x.mean()))
     env = env - env.mean()
     w = np.hanning(len(env))
@@ -76,7 +76,7 @@ def band_energy(freqs: np.ndarray, spec: np.ndarray) -> dict[str, float]:
     out: dict[str, float] = {}
     for name, (lo, hi) in BANDS.items():
         e = float(p[(freqs >= lo) & (freqs < hi)].sum())
-        out[name] = e / total  # نسبی → مستقل از دامنه‌ی مطلق
+        out[name] = e / total  # relative → independent of absolute amplitude
     return out
 
 
@@ -108,11 +108,11 @@ def extract_features(x: np.ndarray, fs: float, rpm: float | None) -> dict[str, f
         feats["be_4500_6000"] + feats["be_6000_9000"] + feats["be_9000_13000"]
     )
 
-    # فرکانس شبکه (مستقل از دور) — عیب الکتریکی
+    # line frequency (speed-independent) — electrical fault
     feats["line_50hz"] = _peak_near(freqs, spec, 50.0, 1.5) / rms
     feats["line_100hz"] = _peak_near(freqs, spec, 100.0, 1.5) / rms
 
-    # پاکت هیلبرت
+    # Hilbert envelope
     env = np.abs(hilbert(x - x.mean()))
     feats["envelope_kurtosis"] = float(kurtosis(env, fisher=True))
 
@@ -135,25 +135,25 @@ def extract_features(x: np.ndarray, fs: float, rpm: float | None) -> dict[str, f
             orders.get(f"ord_{o:g}x", 0) for o in (1.0, 2.0, 3.0, 4.0, 5.0)
         ) / one_x
 
-        # چرخش روغن: تن ~۰.۴۵X بدون هارمونیک دوم
+        # oil whirl: ~0.45X tone without a second harmonic
         ow = _peak_near(freqs, spec, 0.44 * f0, 0.06 * f0)
         feats["oil_whirl_ratio"] = ow / one_x
         feats["oil_whirl_no_harmonic"] = ow / (_peak_near(freqs, spec, 0.88 * f0, tol) + 1e-9)
 
-        # تسمه: سری هارمونیک زیرسنکرون
+        # belt: sub-synchronous harmonic series
         feats["belt_series"] = (
             _peak_near(freqs, spec, 0.42 * f0, tol)
             + _peak_near(freqs, spec, 0.84 * f0, tol)
             + _peak_near(freqs, spec, 1.26 * f0, tol)
         ) / one_x
 
-        # درگیری دنده
+        # gear mesh
         feats["gmf_ratio"] = (
             _peak_near(freqs, spec, 18 * f0, 3 * tol)
             + _peak_near(freqs, spec, 36 * f0, 3 * tol)
         ) / one_x
 
-        # --- طیف پاکت: قله در فرکانس‌های مشخصه‌ی یاتاقان ---
+        # --- envelope spectrum: peak at the characteristic bearing frequencies ---
         ef, es = envelope_spectrum(x, fs)
         es_rms = float(np.sqrt(np.mean(es[ef < 2000] ** 2))) + 1e-12
         etol = max(2.0, 0.02 * f0)
@@ -180,7 +180,7 @@ def extract_features(x: np.ndarray, fs: float, rpm: float | None) -> dict[str, f
     return {k: (0.0 if not np.isfinite(v) else round(float(v), 6)) for k, v in feats.items()}
 
 
-# ترتیب ثابت بردار ویژگی برای مدل ML
+# fixed order of the feature vector for the ML model
 FEATURE_ORDER: list[str] = [
     "rms", "peak", "peak_to_peak", "crest_factor", "kurtosis", "skewness",
     "shape_factor", "clearance_factor", "impulse_factor",

@@ -1,4 +1,4 @@
-"""کلاینت HTTP مشترک برای فراخوانی بین‌سرویسی (async, با retry)."""
+"""Shared HTTP client for inter-service calls (async, with retry)."""
 from __future__ import annotations
 
 from typing import Any

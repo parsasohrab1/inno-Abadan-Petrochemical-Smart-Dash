@@ -1,1 +1,1 @@
-"""سرویس هشدار — قواعد، اولویت‌بندی، اعلان ایمیل/پیامک/درون‌برنامه‌ای (FR-21)."""
+"""Alerting service — rules, prioritization, email/SMS/in-app notifications (FR-21)."""

@@ -1,10 +1,10 @@
-# قراردادهای مشترک (Contracts)
+# Shared contracts
 
-منبع حقیقت برای شکل داده‌ی مبادله‌شده بین سرویس‌ها و فرانت‌اند.
+The source of truth for the shape of data exchanged between services and the frontend.
 
-- `schemas/` — JSON Schema رویدادهای Kafka/MQTT. معادل پایتونی: `services/common/schemas.py`.
-- `openapi/` — اسپک OpenAPI هر سرویس (از `/openapi.json` هر سرویس FastAPI استخراج می‌شود:
+- `schemas/` — JSON Schema of Kafka/MQTT events. Python equivalent: `services/common/schemas.py`.
+- `openapi/` — OpenAPI spec of each service (extracted from the `/openapi.json` of each FastAPI service:
   `curl localhost:8001/openapi.json > openapi/asset-registry.json`).
-- `asyncapi/` — توصیف موضوعات پیام‌رسانی (نگاشت در `docs/api.md`).
+- `asyncapi/` — description of the messaging topics (mapping in `docs/api.md`).
 
-هنگام تغییر یک رویداد: ابتدا schema اینجا، سپس `services/common/schemas.py`، سپس تولیدکننده/مصرف‌کننده.
+When changing an event: first the schema here, then `services/common/schemas.py`, then the producer/consumer.

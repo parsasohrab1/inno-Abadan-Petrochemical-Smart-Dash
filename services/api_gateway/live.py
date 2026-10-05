@@ -1,4 +1,4 @@
-"""پخش بلادرنگ به داشبرد از طریق WebSocket — تجمیع رویدادهای Kafka + نبض اقتصاد."""
+"""Real-time broadcast to the dashboard via WebSocket — aggregation of Kafka events + economics pulse."""
 from __future__ import annotations
 
 import asyncio

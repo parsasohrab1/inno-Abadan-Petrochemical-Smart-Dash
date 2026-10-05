@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 export type LiveMessage = { channel: string; data: any };
 
-/** اتصال WebSocket به دروازه‌ی API با اتصال مجدد خودکار. */
+/** WebSocket connection to the API gateway with automatic reconnection. */
 export function useLiveFeed(onMessage?: (m: LiveMessage) => void) {
   const [connected, setConnected] = useState(false);
   const [last, setLast] = useState<LiveMessage | null>(null);

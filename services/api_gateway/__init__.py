@@ -1,1 +1,1 @@
-"""دروازه‌ی API (BFF) — احراز هویت، RBAC، تجمیع داده و پخش بلادرنگ به داشبرد."""
+"""API gateway (BFF) — authentication, RBAC, data aggregation and real-time broadcast to the dashboard."""

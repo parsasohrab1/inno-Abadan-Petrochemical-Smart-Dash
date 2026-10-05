@@ -1,1 +1,1 @@
-"""لایه‌ی دریافت داده — پل MQTT/OPC-UA→Kafka + شبیه‌ساز فیزیکی مجتمع (FR-01..05)."""
+"""Data acquisition layer — MQTT/OPC-UA→Kafka bridge + physical complex simulator (FR-01..05)."""

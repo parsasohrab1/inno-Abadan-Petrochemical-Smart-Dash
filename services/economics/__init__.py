@@ -1,1 +1,1 @@
-"""سرویس اقتصادی — محاسبه‌ی لحظه‌ای «سود ($)» و «صرفه‌جویی ($)» برای داشبرد مدیریتی."""
+"""Economics service — instantaneous computation of "profit ($)" and "savings ($)" for the management dashboard."""

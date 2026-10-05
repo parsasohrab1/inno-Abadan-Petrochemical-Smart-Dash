@@ -1,7 +1,7 @@
-"""آموزش طبقه‌بند عیب روی داده‌ی ارتعاش سنتتیک.
+"""Train the fault classifier on synthetic vibration data.
 
-هدف NFR-08: دقت ≥ ۹۵٪. اگر دقت اعتبارسنجی از آستانه کمتر باشد، خروج با کد خطا.
-اجرا: python -m ml.training.train_fault_model
+NFR-08 goal: accuracy ≥ 95%. If validation accuracy is below the threshold, exit with an error code.
+Run: python -m ml.training.train_fault_model
 """
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ def build_dataset(seed: int = 42) -> tuple[np.ndarray, np.ndarray]:
             severity = (
                 0.0 if fault.value == "normal" else float(rng.uniform(0.12, 1.0))
             )
-            # تنوع دامنه‌ی پایه و نویز برای تعمیم‌پذیری بهتر
+            # diversity of base amplitude and noise for better generalization
             spec = WaveformSpec(
                 rpm=rpm,
                 base_g=float(rng.uniform(0.035, 0.07)),
